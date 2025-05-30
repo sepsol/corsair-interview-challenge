@@ -4,7 +4,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node ./src/bin/www"
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
   },
   "dependencies": {
     "cors": "^2.8.5",
