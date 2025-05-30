@@ -17,4 +17,13 @@ export const tasks: Task[] = [
 /**
  * Simple ID counter for generating unique task IDs
  */
-export let nextTaskId = 2;
+let nextTaskId = 2;
+
+/**
+ * Get next task ID and increment counter
+ */
+export const getNextTaskId = (): string => {
+  const id = nextTaskId.toString();
+  nextTaskId++;
+  return id;
+};
