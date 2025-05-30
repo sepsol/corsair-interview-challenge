@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import tasksRouter from '@/routes/tasks';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -10,6 +11,9 @@ app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// API Routes
+app.use('/api/tasks', tasksRouter);
 
 // Basic health check route
 app.get('/', (req, res) => {
