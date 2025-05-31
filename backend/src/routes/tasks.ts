@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import express from 'express';
 import { tasks, getNextTaskId } from '@/data/tasks';
-import { CreateTaskRequest } from '@/types/Task';
+import { CreateTaskRequest, Task } from '@/types/Task';
+import { ErrorResponse } from '@/types/api';
 
 const router = express.Router();
 
@@ -8,10 +10,10 @@ const router = express.Router();
  * GET /api/tasks
  * Retrieve all tasks
  */
-router.get('/', (req, res) => {
+router.get<{}, Task[] | ErrorResponse>('/', (req, res) => {
   try {
     res.json(tasks);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error retrieving tasks:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -21,20 +23,21 @@ router.get('/', (req, res) => {
  * POST /api/tasks
  * Create a new task
  */
-router.post('/', (req, res) => {
+router.post<{}, Task | ErrorResponse, CreateTaskRequest>('/', (req, res) => {
   try {
-    const { title, description, status = 'pending' }: CreateTaskRequest = req.body;
+    const { title, description, status = 'pending' } = req.body;
 
     // Basic validation
     if (!title || !description) {
-      return res.status(400).json({ 
+      res.status(400).json({ 
         error: 'Title and description are required' 
       });
+      return;
     }
 
     // Create new task
     const now = new Date().toISOString();
-    const newTask = {
+    const newTask: Task = {
       id: getNextTaskId(),
       title,
       description,
@@ -46,7 +49,7 @@ router.post('/', (req, res) => {
     tasks.push(newTask);
     
     res.status(201).json(newTask);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error creating task:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
