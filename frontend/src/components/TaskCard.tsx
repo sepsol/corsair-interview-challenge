@@ -1,5 +1,7 @@
 import { Task } from "@task-manager/shared";
 import Button from "@/components/ui/Button";
+import Checkbox from "@/components/ui/Checkbox";
+import { useState } from "react";
 
 /**
  * Props for the TaskCard component
@@ -32,6 +34,8 @@ interface TaskCardProps {
  * ```
  */
 export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
+  // Local state for checkbox - starts with task status but can be toggled independently
+  const [isChecked, setIsChecked] = useState(task.status === 'completed');
   const handleEdit = () => {
     if (onEdit) {
       onEdit(task);
@@ -48,12 +52,23 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
     }
   };
 
+  const handleCheckboxToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(e.target.checked);
+  };
+
 
   return (
     <div className="group bg-neutral-900 border border-neutral-700/60 rounded-md p-5 hover:bg-neutral-800/80 hover:border-neutral-600/70 transition-all duration-200">
-      {/* Title row with action buttons */}
+      {/* Title row with checkbox and action buttons */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-medium text-neutral-100 flex-1 mr-3">{task.title}</h3>
+        <div className="flex items-center gap-3 flex-1 mr-3">
+          <Checkbox
+            checked={isChecked}
+            size="lg"
+            onChange={handleCheckboxToggle}
+          />
+          <h3 className="font-medium text-neutral-100">{task.title}</h3>
+        </div>
         <div className="flex items-center gap-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <Button
             onClick={handleEdit}
