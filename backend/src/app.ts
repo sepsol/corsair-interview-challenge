@@ -1,3 +1,7 @@
+// Load environment variables first
+import { loadEnvironment } from '@/config/env';
+loadEnvironment();
+
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
