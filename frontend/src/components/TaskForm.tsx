@@ -93,6 +93,7 @@ export default function TaskForm({
           {...register('title')}
           disabled={isSubmitting}
           placeholder="Enter task title..."
+          autoFocus
         />
       </FormField>
 
