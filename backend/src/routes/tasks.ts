@@ -25,7 +25,7 @@ router.get<{}, Task[] | ErrorResponse>('/', (req, res) => {
  */
 router.post<{}, Task | ErrorResponse, CreateTaskRequest>('/', (req, res) => {
   try {
-    const { title, description, status = 'pending' } = req.body;
+    const { title, description = '', status = 'pending' } = req.body;
 
     // Basic validation
     if (!title) {
