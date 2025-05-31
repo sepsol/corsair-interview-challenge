@@ -169,6 +169,31 @@ export default function TasksPage() {
     }
   };
 
+  const handleToggleTaskStatus = async (task: Task) => {
+    try {
+      const newStatus = task.status === 'completed' ? 'pending' : 'completed';
+      
+      // Update task status via API
+      const response = await api.put<Task>(`/tasks/${task.id}`, {
+        title: task.title,
+        description: task.description,
+        status: newStatus
+      });
+
+      // Update the task in the list
+      setTasks(prev => prev.map(t => 
+        t.id === task.id ? response.data : t
+      ));
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.error || err.message || 'Failed to update task status';
+        console.error('Status toggle error:', message);
+      } else {
+        console.error('Status toggle error:', 'An unexpected error occurred');
+      }
+    }
+  };
+
   return (
     <PageLayout 
       title="Tasks" 
@@ -208,6 +233,7 @@ export default function TasksPage() {
                   task={task} 
                   onEdit={handleOpenEditModal}
                   onDelete={handleOpenDeleteModal}
+                  onToggleStatus={handleToggleTaskStatus}
                 />
               ))}
             </div>

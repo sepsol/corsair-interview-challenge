@@ -1,7 +1,6 @@
 import { Task } from "@task-manager/shared";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
-import { useState } from "react";
 
 /**
  * Props for the TaskCard component
@@ -13,6 +12,8 @@ interface TaskCardProps {
   onEdit?: (task: Task) => void;
   /** Callback function to handle deleting a task */
   onDelete?: (task: Task) => void;
+  /** Callback function to handle toggling task status */
+  onToggleStatus?: (task: Task) => void;
 }
 
 /**
@@ -33,9 +34,7 @@ interface TaskCardProps {
  * <TaskCard task={taskObject} />
  * ```
  */
-export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
-  // Local state for checkbox - starts with task status but can be toggled independently
-  const [isChecked, setIsChecked] = useState(task.status === 'completed');
+export default function TaskCard({ task, onEdit, onDelete, onToggleStatus }: TaskCardProps) {
   const handleEdit = () => {
     if (onEdit) {
       onEdit(task);
@@ -52,8 +51,12 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
     }
   };
 
-  const handleCheckboxToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(e.target.checked);
+  const handleCheckboxToggle = () => {
+    if (onToggleStatus) {
+      onToggleStatus(task);
+    } else {
+      console.log('Toggle status for task:', task.id, task.title);
+    }
   };
 
 
@@ -63,7 +66,7 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3 flex-1 mr-3">
           <Checkbox
-            checked={isChecked}
+            checked={task.status === 'completed'}
             size="lg"
             onChange={handleCheckboxToggle}
           />
