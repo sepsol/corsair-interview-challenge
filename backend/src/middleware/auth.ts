@@ -1,9 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { getUserById } from '@/data/users';
-import { AuthenticatedRequest } from '@/types/api';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+
+/**
+ * Extended Request interface that includes authenticated user information
+ */
+export interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    username: string;
+  };
+}
 
 /**
  * Middleware to authenticate JWT tokens from Authorization header

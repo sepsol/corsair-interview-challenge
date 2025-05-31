@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { LoginRequest, RegisterRequest, AuthResponse } from '@task-manager/shared';
 import { getUserByUsername, createUser, validatePassword } from '@/data/users';
 import { generateToken } from '@/middleware/auth';
@@ -11,7 +11,7 @@ const router = Router();
  * POST /api/auth/login
  * Authenticate user with username and password
  */
-router.post<{}, AuthResponse | ErrorResponse, LoginRequest>('/login', async (req, res) => {
+router.post('/login', async (req: Request<{}, unknown, LoginRequest>, res: Response<AuthResponse | ErrorResponse>) => {
   try {
     const { username, password } = req.body;
 
@@ -60,7 +60,7 @@ router.post<{}, AuthResponse | ErrorResponse, LoginRequest>('/login', async (req
  * POST /api/auth/register
  * Register a new user account
  */
-router.post<{}, AuthResponse | ErrorResponse, RegisterRequest>('/register', async (req, res) => {
+router.post('/register', async (req: Request<{}, unknown, RegisterRequest>, res: Response<AuthResponse | ErrorResponse>) => {
   try {
     const { username, password } = req.body;
 

@@ -1,12 +1,11 @@
- 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import express from 'express';
+import { Router, Request, Response } from 'express';
 import { tasks, getNextTaskId } from '@/data/tasks';
 import { CreateTaskRequest, Task, UpdateTaskRequest } from '@task-manager/shared';
 import { ErrorResponse } from '@/types/api';
 import { authenticateToken } from '@/middleware/auth';
 
-const router = express.Router();
+const router = Router();
 
 // Apply authentication middleware to all routes
 router.use(authenticateToken);
@@ -15,7 +14,7 @@ router.use(authenticateToken);
  * GET /api/tasks
  * Retrieve all tasks
  */
-router.get<{}, Task[] | ErrorResponse>('/', (req, res) => {
+router.get('/', (req: Request, res: Response<Task[] | ErrorResponse>) => {
   try {
     res.json(tasks);
   } catch (error: unknown) {
@@ -28,7 +27,7 @@ router.get<{}, Task[] | ErrorResponse>('/', (req, res) => {
  * POST /api/tasks
  * Create a new task
  */
-router.post<{}, Task | ErrorResponse, CreateTaskRequest>('/', (req, res) => {
+router.post('/', (req: Request<{}, unknown, CreateTaskRequest>, res: Response<Task | ErrorResponse>) => {
   try {
     const { title, description = '', status = 'pending' } = req.body;
 
@@ -64,7 +63,7 @@ router.post<{}, Task | ErrorResponse, CreateTaskRequest>('/', (req, res) => {
  * PUT /api/tasks/:id
  * Update an existing task
  */
-router.put<{ id: string }, Task | ErrorResponse, UpdateTaskRequest>('/:id', (req, res) => {
+router.put('/:id', (req: Request<{ id: string }, unknown, UpdateTaskRequest>, res: Response<Task | ErrorResponse>) => {
   try {
     const { id } = req.params;
     const { title, description, status } = req.body;
@@ -100,7 +99,7 @@ router.put<{ id: string }, Task | ErrorResponse, UpdateTaskRequest>('/:id', (req
  * DELETE /api/tasks/:id
  * Delete a task
  */
-router.delete<{ id: string }, Task | ErrorResponse>('/:id', (req, res) => {
+router.delete('/:id', (req: Request<{ id: string }>, res: Response<Task | ErrorResponse>) => {
   try {
     const { id } = req.params;
 
