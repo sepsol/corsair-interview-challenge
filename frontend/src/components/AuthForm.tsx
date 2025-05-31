@@ -6,7 +6,6 @@ import { loginSchema, registerSchema, AuthFormData } from "@/schemas/authSchema"
 import Button from "@/components/ui/Button";
 import TextInput from "@/components/ui/TextInput";
 import ErrorMessage from "@/components/ui/ErrorMessage";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export type { AuthFormData };
 
@@ -72,7 +71,6 @@ export default function AuthForm({
     ? "Join us! Please enter your details to create an account."
     : "Welcome back! Please enter your credentials.";
   const submitButtonText = isRegister ? "Create account" : "Sign in";
-  const loadingMessage = isRegister ? "Creating account..." : "Signing in...";
 
   return (
     <div className="max-w-md w-full space-y-8">
@@ -86,67 +84,60 @@ export default function AuthForm({
         </p>
       </div>
 
-      {/* Loading overlay */}
-      {loading && (
-        <div className="flex justify-center py-8">
-          <LoadingSpinner message={loadingMessage} />
-        </div>
-      )}
-
       {/* Auth form */}
-      {!loading && (
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-          {/* Error message */}
-          {error && (
-            <ErrorMessage message={error} />
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+        {/* Error message */}
+        {error && (
+          <ErrorMessage message={error} />
+        )}
+
+        {/* Username field */}
+        <div>
+          <label htmlFor="username" className="block text-sm font-medium text-neutral-300 mb-2">
+            Username
+          </label>
+          <TextInput
+            id="username"
+            type="text"
+            placeholder="Enter your username"
+            error={!!errors.username}
+            disabled={loading}
+            {...register("username")}
+          />
+          {errors.username && (
+            <p className="mt-1 text-sm text-red-400">{errors.username.message}</p>
           )}
+        </div>
 
-          {/* Username field */}
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-neutral-300 mb-2">
-              Username
-            </label>
-            <TextInput
-              id="username"
-              type="text"
-              placeholder="Enter your username"
-              error={!!errors.username}
-              {...register("username")}
-            />
-            {errors.username && (
-              <p className="mt-1 text-sm text-red-400">{errors.username.message}</p>
-            )}
-          </div>
+        {/* Password field */}
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-neutral-300 mb-2">
+            Password
+          </label>
+          <TextInput
+            id="password"
+            type="password"
+            placeholder="Enter your password"
+            error={!!errors.password}
+            disabled={loading}
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>
+          )}
+        </div>
 
-          {/* Password field */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-neutral-300 mb-2">
-              Password
-            </label>
-            <TextInput
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              error={!!errors.password}
-              {...register("password")}
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>
-            )}
-          </div>
-
-          {/* Submit button */}
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="w-full"
-            loading={loading}
-          >
-            {submitButtonText}
-          </Button>
-        </form>
-      )}
+        {/* Submit button */}
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className="w-full"
+          loading={loading}
+        >
+          {submitButtonText}
+        </Button>
+      </form>
 
       {/* Additional info */}
       <div className="text-center">
