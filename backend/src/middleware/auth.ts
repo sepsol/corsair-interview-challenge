@@ -20,7 +20,7 @@ export interface AuthenticatedRequest extends Request {
  * @param res - Express response object
  * @param next - Express next function
  */
-export const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
@@ -38,13 +38,14 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
       return;
     }
 
-    req.user = {
+    (req as AuthenticatedRequest).user = {
       id: user.id,
       username: user.username
     };
     
     next();
   } catch (error) {
+    console.error('Token verification error:', error);
     res.status(403).json({ error: 'Invalid or expired token' });
     return;
   }
