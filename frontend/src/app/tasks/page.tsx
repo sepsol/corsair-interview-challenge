@@ -7,6 +7,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLayout from "@/components/ui/PageLayout";
 import TaskCard from "@/components/TaskCard";
 import EmptyState from "@/components/ui/EmptyState";
+import Button from "@/components/ui/Button";
 import api from "@/services/api";
 
 /**
@@ -48,8 +49,20 @@ export default function TasksPage() {
     fetchTasks();
   }, []);
 
+  const handleOpenModal = () => {
+    console.log('Button clicked!');
+  };
+
   return (
-    <PageLayout title="Tasks" description="Manage your tasks efficiently">
+    <PageLayout 
+      title="Tasks" 
+      description="Manage your tasks efficiently"
+      headerAction={
+        <Button onClick={handleOpenModal}>
+          + Add Task
+        </Button>
+      }
+    >
       {isLoading && (
         <LoadingSpinner message="Loading tasks..." />
       )}
