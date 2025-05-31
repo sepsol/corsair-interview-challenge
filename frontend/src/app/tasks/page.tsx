@@ -29,7 +29,9 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -53,12 +55,22 @@ export default function TasksPage() {
     fetchTasks();
   }, []);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const handleOpenCreateModal = () => {
+    setIsCreateModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+  };
+
+  const handleOpenEditModal = (task: Task) => {
+    setEditingTask(task);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingTask(null);
   };
 
   const handleCreateTask = async (formData: TaskFormData) => {
@@ -74,10 +86,37 @@ export default function TasksPage() {
       setTasks(prev => [response.data, ...prev]);
       
       // Close modal
-      handleCloseModal();
+      handleCloseCreateModal();
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const message = err.response?.data?.error || err.message || 'Failed to create task';
+        throw new Error(message);
+      } else {
+        throw new Error('An unexpected error occurred');
+      }
+    }
+  };
+
+  const handleEditTask = async (formData: TaskFormData) => {
+    if (!editingTask) return;
+    
+    try {
+      // Update task via API
+      const response = await api.put<Task>(`/tasks/${editingTask.id}`, {
+        title: formData.title,
+        description: formData.description || '',
+      });
+
+      // Update the task in the list
+      setTasks(prev => prev.map(task => 
+        task.id === editingTask.id ? response.data : task
+      ));
+      
+      // Close modal
+      handleCloseEditModal();
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.error || err.message || 'Failed to update task';
         throw new Error(message);
       } else {
         throw new Error('An unexpected error occurred');
@@ -90,7 +129,7 @@ export default function TasksPage() {
       title="Tasks" 
       description="Manage your tasks efficiently"
       headerAction={
-        <Button onClick={handleOpenModal}>
+        <Button onClick={handleOpenCreateModal}>
           + Add Task
         </Button>
       }
@@ -119,23 +158,44 @@ export default function TasksPage() {
           ) : (
             <div className="space-y-3">
               {tasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
+                <TaskCard 
+                  key={task.id} 
+                  task={task} 
+                  onEdit={handleOpenEditModal}
+                />
               ))}
             </div>
           )}
         </>
       )}
 
-      {/* Add Task Modal */}
+      {/* Create Task Modal */}
       <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseCreateModal}
         title="Create New Task"
         size="md"
       >
         <TaskForm
           onSubmit={handleCreateTask}
-          onCancel={handleCloseModal}
+          onCancel={handleCloseCreateModal}
+        />
+      </Modal>
+
+      {/* Edit Task Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        title="Edit Task"
+        size="md"
+      >
+        <TaskForm
+          onSubmit={handleEditTask}
+          onCancel={handleCloseEditModal}
+          initialData={editingTask ? {
+            title: editingTask.title,
+            description: editingTask.description
+          } : undefined}
         />
       </Modal>
     </PageLayout>

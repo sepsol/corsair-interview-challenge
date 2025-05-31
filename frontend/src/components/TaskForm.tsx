@@ -47,6 +47,7 @@ export default function TaskForm({
   onCancel,
   initialData = {}
 }: TaskFormProps) {
+  const isEditing = Boolean(initialData.title);
   const {
     register,
     handleSubmit,
@@ -117,7 +118,7 @@ export default function TaskForm({
           disabled={isSubmitting}
           className="flex-1"
         >
-          Create Task
+          {isEditing ? 'Update Task' : 'Create Task'}
         </Button>
         <Button
           type="button"

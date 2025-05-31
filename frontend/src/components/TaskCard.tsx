@@ -7,6 +7,8 @@ import Button from "@/components/ui/Button";
 interface TaskCardProps {
   /** The task object to display */
   task: Task;
+  /** Callback function to handle editing a task */
+  onEdit?: (task: Task) => void;
 }
 
 /**
@@ -27,9 +29,13 @@ interface TaskCardProps {
  * <TaskCard task={taskObject} />
  * ```
  */
-export default function TaskCard({ task }: TaskCardProps) {
+export default function TaskCard({ task, onEdit }: TaskCardProps) {
   const handleEdit = () => {
-    console.log('Edit task:', task.id, task.title);
+    if (onEdit) {
+      onEdit(task);
+    } else {
+      console.log('Edit task:', task.id, task.title);
+    }
   };
 
   const handleDelete = () => {
