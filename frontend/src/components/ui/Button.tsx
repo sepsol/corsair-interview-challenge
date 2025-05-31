@@ -53,11 +53,19 @@ export default function Button({
       className={clsx(
         // Base styles
         'inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black',
-        // Variant styles
+        // Variant styles (with conditional hover effects)
         {
-          'bg-neutral-100 text-neutral-900 hover:bg-neutral-200 focus:ring-neutral-400': variant === 'primary',
-          'bg-neutral-800 text-neutral-200 border border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 focus:ring-neutral-500': variant === 'secondary',
-          'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500': variant === 'danger',
+          // Primary variant
+          'bg-neutral-100 text-neutral-900 focus:ring-neutral-400': variant === 'primary',
+          'hover:bg-neutral-200': variant === 'primary' && !disabled && !loading,
+          
+          // Secondary variant
+          'bg-neutral-800 text-neutral-200 border border-neutral-700 focus:ring-neutral-500': variant === 'secondary',
+          'hover:bg-neutral-700 hover:border-neutral-600': variant === 'secondary' && !disabled && !loading,
+          
+          // Danger variant
+          'bg-red-600 text-white focus:ring-red-500': variant === 'danger',
+          'hover:bg-red-700': variant === 'danger' && !disabled && !loading,
         },
         // Size styles
         {
@@ -65,9 +73,12 @@ export default function Button({
           'px-4 py-2 text-sm': size === 'md',
           'px-6 py-3 text-base': size === 'lg',
         },
-        // State styles
+        // Cursor and state styles
         {
-          'opacity-50 cursor-not-allowed': disabled || loading,
+          'cursor-pointer': !disabled && !loading,
+          'cursor-not-allowed': disabled && !loading,
+          'cursor-default': loading,
+          'opacity-50': disabled || loading,
         },
         className
       )}
