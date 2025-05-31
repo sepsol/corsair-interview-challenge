@@ -6,6 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import tasksRouter from '@/routes/tasks';
+import authRouter from '@/routes/auth';
 import { artificialDelay } from '@/middleware/delay';
 
 const app = express();
@@ -22,6 +23,7 @@ const delayMs = parseInt(process.env.API_DELAY_MS || '1000', 10);
 app.use(artificialDelay(delayMs));
 
 // API Routes
+app.use('/api/auth', authRouter);
 app.use('/api/tasks', tasksRouter);
 
 // Basic health check route
