@@ -91,4 +91,33 @@ router.put<{ id: string }, Task | ErrorResponse, UpdateTaskRequest>('/:id', (req
   }
 });
 
+/**
+ * DELETE /api/tasks/:id
+ * Delete a task
+ */
+router.delete<{ id: string }, Task | ErrorResponse>('/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find task by ID
+    const taskIndex = tasks.findIndex(task => task.id === id);
+    
+    if (taskIndex === -1) {
+      res.status(404).json({ error: 'Task not found' });
+      return;
+    }
+
+    // Get the task before removing it
+    const deletedTask = tasks[taskIndex];
+    
+    // Remove task from array
+    tasks.splice(taskIndex, 1);
+    
+    res.status(200).json(deletedTask);
+  } catch (error: unknown) {
+    console.error('Error deleting task:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;
