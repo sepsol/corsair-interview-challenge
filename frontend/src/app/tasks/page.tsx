@@ -36,6 +36,7 @@ export default function TasksPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [toggleLoadingTasks, setToggleLoadingTasks] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -157,19 +158,26 @@ export default function TasksPage() {
       // Close modal
       handleCloseDeleteModal();
     } catch (err) {
+      let errorMessage = 'Failed to delete task';
       if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.error || err.message || 'Failed to delete task';
-        // You could show an error toast here, for now we'll just log it
-        console.error('Delete error:', message);
-      } else {
-        console.error('Delete error:', 'An unexpected error occurred');
+        errorMessage = err.response?.data?.error || err.message || errorMessage;
       }
+      
+      // Set error state for user feedback
+      setError(errorMessage);
+      console.error('Delete error:', errorMessage);
+      
+      // Clear error after 5 seconds
+      setTimeout(() => setError(null), 5000);
     } finally {
       setIsDeleting(false);
     }
   };
 
   const handleToggleTaskStatus = async (task: Task) => {
+    // Add task to loading set
+    setToggleLoadingTasks(prev => new Set(prev).add(task.id));
+    
     try {
       const newStatus = task.status === 'completed' ? 'pending' : 'completed';
       
@@ -185,12 +193,24 @@ export default function TasksPage() {
         t.id === task.id ? response.data : t
       ));
     } catch (err) {
+      let errorMessage = 'Failed to update task status';
       if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.error || err.message || 'Failed to update task status';
-        console.error('Status toggle error:', message);
-      } else {
-        console.error('Status toggle error:', 'An unexpected error occurred');
+        errorMessage = err.response?.data?.error || err.message || errorMessage;
       }
+      
+      // Set error state (you could implement a toast/notification system here)
+      setError(errorMessage);
+      console.error('Status toggle error:', errorMessage);
+      
+      // Clear error after 5 seconds
+      setTimeout(() => setError(null), 5000);
+    } finally {
+      // Remove task from loading set
+      setToggleLoadingTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(task.id);
+        return newSet;
+      });
     }
   };
 
@@ -234,6 +254,7 @@ export default function TasksPage() {
                   onEdit={handleOpenEditModal}
                   onDelete={handleOpenDeleteModal}
                   onToggleStatus={handleToggleTaskStatus}
+                  isToggleLoading={toggleLoadingTasks.has(task.id)}
                 />
               ))}
             </div>
