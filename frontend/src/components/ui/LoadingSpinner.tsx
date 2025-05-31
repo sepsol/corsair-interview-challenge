@@ -1,8 +1,28 @@
+/**
+ * Props for the LoadingSpinner component
+ */
 interface LoadingSpinnerProps {
+  /** Custom message to display below the spinner */
   message?: string;
+  /** Whether to render as a full-page loading state or content-area loading */
   fullPage?: boolean;
 }
 
+/**
+ * A reusable loading spinner component with customizable display modes
+ * 
+ * @param props - The component props
+ * @returns A loading spinner with optional message
+ * 
+ * @example
+ * ```tsx
+ * // Content area loading
+ * <LoadingSpinner message="Loading tasks..." />
+ * 
+ * // Full page loading
+ * <LoadingSpinner message="Loading..." fullPage />
+ * ```
+ */
 export default function LoadingSpinner({ 
   message = "Loading...", 
   fullPage = false 

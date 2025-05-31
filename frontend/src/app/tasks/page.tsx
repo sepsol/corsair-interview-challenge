@@ -7,6 +7,18 @@ import PageLayout from "@/components/ui/PageLayout";
 import TaskCard from "@/components/TaskCard";
 import EmptyState from "@/components/ui/EmptyState";
 
+/**
+ * Main tasks page component that displays a list of tasks
+ * 
+ * Features:
+ * - Fetches tasks from the API on component mount
+ * - Displays loading state while fetching
+ * - Shows error state if API request fails
+ * - Renders empty state when no tasks exist
+ * - Lists all tasks in individual TaskCard components
+ * 
+ * @returns The complete tasks page with header and task list
+ */
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
