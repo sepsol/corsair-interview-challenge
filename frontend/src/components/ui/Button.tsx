@@ -8,7 +8,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Content to display inside the button */
   children: ReactNode;
   /** Visual style variant of the button */
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: 'primary' | 'secondary' | 'danger' | 'danger-outline';
   /** Size of the button */
   size?: 'sm' | 'md' | 'lg';
   /** Whether the button is in a loading state */
@@ -19,7 +19,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  * A reusable button component with consistent styling and variants
  * 
  * Features:
- * - Multiple variants (primary, secondary, danger)
+ * - Multiple variants (primary, secondary, danger, danger-outline)
  * - Different sizes (sm, md, lg)
  * - Loading state with spinner
  * - Full accessibility support
@@ -66,6 +66,10 @@ export default function Button({
           // Danger variant
           'bg-red-600 text-white focus:ring-red-500': variant === 'danger',
           'hover:bg-red-700': variant === 'danger' && !disabled && !loading,
+          
+          // Danger outline variant (GitHub-style)
+          'text-red-400 border border-red-400/30 bg-transparent focus:ring-red-500': variant === 'danger-outline',
+          'hover:bg-red-600 hover:text-white hover:border-red-600': variant === 'danger-outline' && !disabled && !loading,
         },
         // Size styles
         {
@@ -86,7 +90,14 @@ export default function Button({
       {...props}
     >
       {loading && (
-        <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2" />
+        <div className={clsx(
+          'animate-spin rounded-full border-2 border-current border-t-transparent mr-2',
+          {
+            'h-3 w-3': size === 'sm',
+            'h-4 w-4': size === 'md',
+            'h-5 w-5': size === 'lg',
+          }
+        )} />
       )}
       {children}
     </button>

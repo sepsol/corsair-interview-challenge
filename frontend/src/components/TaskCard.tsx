@@ -36,6 +36,7 @@ export default function TaskCard({ task }: TaskCardProps) {
     console.log('Delete task:', task.id, task.title);
   };
 
+
   return (
     <div className="group bg-neutral-900 border border-neutral-700/60 rounded-md p-5 hover:bg-neutral-800/80 hover:border-neutral-600/70 transition-all duration-200">
       {/* Title row with action buttons */}
@@ -45,7 +46,8 @@ export default function TaskCard({ task }: TaskCardProps) {
           <Button
             onClick={handleEdit}
             variant="secondary"
-            className="px-3 py-1.5 text-xs flex items-center gap-1.5"
+            size="sm"
+            className="flex items-center gap-1.5"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -54,8 +56,9 @@ export default function TaskCard({ task }: TaskCardProps) {
           </Button>
           <Button
             onClick={handleDelete}
-            variant="danger"
-            className="px-3 py-1.5 text-xs flex items-center gap-1.5"
+            variant="danger-outline"
+            size="sm"
+            className="flex items-center gap-1.5"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
