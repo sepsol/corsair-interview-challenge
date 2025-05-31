@@ -5,18 +5,8 @@ import { getUserById } from '@/data/users';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 /**
- * Extended Request interface that includes authenticated user information
- */
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    username: string;
-  };
-}
-
-/**
  * Middleware to authenticate JWT tokens from Authorization header
- * @param req - Express request object with potential user context
+ * @param req - Express request object without user context
  * @param res - Express response object
  * @param next - Express next function
  */
@@ -38,9 +28,10 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    (req as AuthenticatedRequest).user = {
+    req.user = {
       id: user.id,
-      username: user.username
+      username: user.username,
+      createdAt: user.createdAt,
     };
     
     next();
