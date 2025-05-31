@@ -1,17 +1,11 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import Button from '@/components/ui/Button';
 import FormField from '@/components/ui/FormField';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import TextInput from '@/components/ui/TextInput';
 import TextArea from '@/components/ui/TextArea';
-
-/**
- * Form data structure for task creation
- */
-export interface TaskFormData {
-  title: string;
-  description: string;
-}
+import { taskFormSchema, TaskFormData } from '@/schemas/taskSchema';
 
 /**
  * Props for the TaskForm component
@@ -21,8 +15,6 @@ interface TaskFormProps {
   onSubmit: (data: TaskFormData) => Promise<void>;
   /** Function called when cancel button is clicked */
   onCancel: () => void;
-  /** Whether the form is currently submitting */
-  isSubmitting?: boolean;
   /** Initial form data (for editing) */
   initialData?: Partial<TaskFormData>;
 }
@@ -31,7 +23,8 @@ interface TaskFormProps {
  * A reusable task form component for creating and editing tasks
  * 
  * Features:
- * - Form validation (title required, description optional)
+ * - Schema-based validation using yup
+ * - Optimized performance with react-hook-form
  * - Loading states during submission
  * - Error handling and display
  * - Accessible form controls
@@ -45,74 +38,71 @@ interface TaskFormProps {
  * <TaskForm
  *   onSubmit={handleCreateTask}
  *   onCancel={handleCloseModal}
- *   isSubmitting={isCreating}
+ *   initialData={{ title: 'Edit this task' }}
  * />
  * ```
  */
 export default function TaskForm({
   onSubmit,
   onCancel,
-  isSubmitting = false,
   initialData = {}
 }: TaskFormProps) {
-  const [formData, setFormData] = useState<TaskFormData>({
-    title: initialData.title || '',
-    description: initialData.description || ''
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+    clearErrors
+  } = useForm<TaskFormData>({
+    resolver: yupResolver(taskFormSchema),
+    defaultValues: {
+      title: initialData.title || '',
+      description: initialData.description || ''
+    }
   });
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-    // Basic validation
-    if (!formData.title.trim()) {
-      setSubmitError('Title is required');
-      return;
-    }
-
+  const onFormSubmit = async (data: TaskFormData) => {
     try {
-      setSubmitError(null);
-      await onSubmit({
-        title: formData.title.trim(),
-        description: formData.description.trim()
-      });
+      clearErrors('root');
+      await onSubmit(data);
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'An error occurred');
+      setError('root', {
+        type: 'manual',
+        message: error instanceof Error ? error.message : 'An error occurred'
+      });
     }
-  };
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, title: e.target.value }));
-    // Clear error when user starts typing
-    if (submitError) setSubmitError(null);
-  };
-
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, description: e.target.value }));
   };
 
   return (
-    <div className="space-y-4">
-      {/* Error Message */}
-      {submitError && (
-        <ErrorMessage message={submitError} />
+    <form onSubmit={handleSubmit(onFormSubmit)} noValidate className="space-y-4">
+      {/* Global Error Message */}
+      {errors.root && (
+        <ErrorMessage message={errors.root.message || 'An error occurred'} />
       )}
 
       {/* Title Input */}
-      <FormField label="Title" required disabled={isSubmitting}>
+      <FormField 
+        label="Title" 
+        required 
+        disabled={isSubmitting}
+        error={errors.title?.message}
+      >
         <TextInput
           type="text"
-          value={formData.title}
-          onChange={handleTitleChange}
+          {...register('title')}
           disabled={isSubmitting}
           placeholder="Enter task title..."
-          required
         />
       </FormField>
 
       {/* Description Input */}
-      <FormField label="Description" disabled={isSubmitting}>
+      <FormField 
+        label="Description" 
+        disabled={isSubmitting}
+        error={errors.description?.message}
+      >
         <TextArea
-          value={formData.description}
-          onChange={handleDescriptionChange}
+          {...register('description')}
           disabled={isSubmitting}
           rows={3}
           placeholder="Enter task description (optional)..."
@@ -122,7 +112,7 @@ export default function TaskForm({
       {/* Actions */}
       <div className="flex gap-3 pt-4">
         <Button
-          onClick={handleSubmit}
+          type="submit"
           loading={isSubmitting}
           disabled={isSubmitting}
           className="flex-1"
@@ -130,6 +120,7 @@ export default function TaskForm({
           Create Task
         </Button>
         <Button
+          type="button"
           onClick={onCancel}
           variant="secondary"
           disabled={isSubmitting}
@@ -138,6 +129,6 @@ export default function TaskForm({
           Cancel
         </Button>
       </div>
-    </div>
+    </form>
   );
 }

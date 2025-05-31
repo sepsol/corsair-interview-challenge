@@ -9,7 +9,8 @@ import TaskCard from "@/components/TaskCard";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
-import TaskForm, { TaskFormData } from "@/components/TaskForm";
+import TaskForm from "@/components/TaskForm";
+import { TaskFormData } from "@/schemas/taskSchema";
 import api from "@/services/api";
 
 /**
@@ -29,7 +30,6 @@ export default function TasksPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -59,12 +59,9 @@ export default function TasksPage() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setIsSubmitting(false);
   };
 
   const handleCreateTask = async (formData: TaskFormData) => {
-    setIsSubmitting(true);
-    
     try {
       // Create task via API
       const response = await api.post<Task>('/tasks', {
@@ -85,8 +82,6 @@ export default function TasksPage() {
       } else {
         throw new Error('An unexpected error occurred');
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -141,7 +136,6 @@ export default function TasksPage() {
         <TaskForm
           onSubmit={handleCreateTask}
           onCancel={handleCloseModal}
-          isSubmitting={isSubmitting}
         />
       </Modal>
     </PageLayout>
