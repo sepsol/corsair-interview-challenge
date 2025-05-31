@@ -123,7 +123,7 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleStatus, isTog
             <span className="text-green-400/60 font-medium">✓ Completed</span>
           )}
           {task.status === 'pending' && (
-            <span className="text-amber-400/65 font-medium">⏳ Pending</span>
+            <span className="text-amber-400/65 font-medium">Pending</span>
           )}
         </div>
       </div>
