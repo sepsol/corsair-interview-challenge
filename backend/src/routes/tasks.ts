@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import express from 'express';
 import { tasks, getNextTaskId } from '@/data/tasks';
-import { CreateTaskRequest, Task } from '@/types/Task';
+import { CreateTaskRequest, Task, UpdateTaskRequest } from '@/types/Task';
 import { ErrorResponse } from '@/types/api';
 
 const router = express.Router();
@@ -51,6 +51,42 @@ router.post<{}, Task | ErrorResponse, CreateTaskRequest>('/', (req, res) => {
     res.status(201).json(newTask);
   } catch (error: unknown) {
     console.error('Error creating task:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * PUT /api/tasks/:id
+ * Update an existing task
+ */
+router.put<{ id: string }, Task | ErrorResponse, UpdateTaskRequest>('/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, status } = req.body;
+
+    // Find task by ID
+    const taskIndex = tasks.findIndex(task => task.id === id);
+    
+    if (taskIndex === -1) {
+      res.status(404).json({ error: 'Task not found' });
+      return;
+    }
+
+    // Update task with provided fields
+    const existingTask = tasks[taskIndex];
+    const updatedTask: Task = {
+      ...existingTask,
+      ...(title !== undefined && { title }),
+      ...(description !== undefined && { description }),
+      ...(status !== undefined && { status }),
+      updatedAt: new Date().toISOString(),
+    };
+
+    tasks[taskIndex] = updatedTask;
+    
+    res.json(updatedTask);
+  } catch (error: unknown) {
+    console.error('Error updating task:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
