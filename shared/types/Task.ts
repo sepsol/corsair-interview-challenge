@@ -23,7 +23,7 @@ export interface CreateTaskRequest {
   /** Task title */
   title: string;
   /** Detailed description of the task */
-  description: string;
+  description?: string;
   /** Initial task status (defaults to 'pending' if not provided) */
   status?: 'pending' | 'completed';
 }

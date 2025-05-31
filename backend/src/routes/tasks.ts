@@ -28,9 +28,9 @@ router.post<{}, Task | ErrorResponse, CreateTaskRequest>('/', (req, res) => {
     const { title, description, status = 'pending' } = req.body;
 
     // Basic validation
-    if (!title || !description) {
+    if (!title) {
       res.status(400).json({ 
-        error: 'Title and description are required' 
+        error: 'Title is required' 
       });
       return;
     }
