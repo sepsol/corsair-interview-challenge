@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, cloneElement, isValidElement } from 'react';
 
 /**
  * Props for the FormField component
@@ -56,7 +56,10 @@ export default function FormField({
       </label>
       
       <div className={error ? 'mb-1' : ''}>
-        {children}
+        {isValidElement(children) 
+          ? cloneElement(children, { error: Boolean(error) } as any)
+          : children
+        }
       </div>
       
       {error && (
