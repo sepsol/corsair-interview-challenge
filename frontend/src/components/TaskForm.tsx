@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Button from '@/components/ui/Button';
 import FormField from '@/components/ui/FormField';
@@ -47,7 +48,7 @@ export default function TaskForm({
   onCancel,
   initialData = {}
 }: TaskFormProps) {
-  const isEditing = Boolean(initialData.title);
+  const [isEditing] = useState(Boolean(initialData.title || initialData.description));
   const {
     register,
     handleSubmit,
