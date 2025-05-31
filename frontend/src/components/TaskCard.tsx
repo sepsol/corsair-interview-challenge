@@ -70,7 +70,13 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleStatus }: Tas
             size="lg"
             onChange={handleCheckboxToggle}
           />
-          <h3 className="font-medium text-neutral-100">{task.title}</h3>
+          <h3 className={`font-medium ${
+            task.status === 'completed' 
+              ? 'text-neutral-400 line-through' 
+              : 'text-neutral-100'
+          }`}>
+            {task.title}
+          </h3>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <Button
