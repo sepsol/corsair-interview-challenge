@@ -9,6 +9,8 @@ interface TaskCardProps {
   task: Task;
   /** Callback function to handle editing a task */
   onEdit?: (task: Task) => void;
+  /** Callback function to handle deleting a task */
+  onDelete?: (task: Task) => void;
 }
 
 /**
@@ -29,7 +31,7 @@ interface TaskCardProps {
  * <TaskCard task={taskObject} />
  * ```
  */
-export default function TaskCard({ task, onEdit }: TaskCardProps) {
+export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
   const handleEdit = () => {
     if (onEdit) {
       onEdit(task);
@@ -39,7 +41,11 @@ export default function TaskCard({ task, onEdit }: TaskCardProps) {
   };
 
   const handleDelete = () => {
-    console.log('Delete task:', task.id, task.title);
+    if (onDelete) {
+      onDelete(task);
+    } else {
+      console.log('Delete task:', task.id, task.title);
+    }
   };
 
 

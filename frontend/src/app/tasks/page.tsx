@@ -9,6 +9,7 @@ import TaskCard from "@/components/TaskCard";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import TaskForm from "@/components/TaskForm";
 import { TaskFormData } from "@/schemas/taskSchema";
 import api from "@/services/api";
@@ -32,6 +33,9 @@ export default function TasksPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingTask, setDeletingTask] = useState<Task | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -71,6 +75,20 @@ export default function TasksPage() {
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     setEditingTask(null);
+  };
+
+  const handleOpenDeleteModal = (task: Task) => {
+    setDeletingTask(task);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    // Delay clearing the deletingTask to allow modal exit animation to complete
+    setTimeout(() => {
+      setDeletingTask(null);
+      setIsDeleting(false);
+    }, 150); // Match the modal exit animation duration
   };
 
   const handleCreateTask = async (formData: TaskFormData) => {
@@ -124,6 +142,33 @@ export default function TasksPage() {
     }
   };
 
+  const handleDeleteTask = async () => {
+    if (!deletingTask) return;
+    
+    try {
+      setIsDeleting(true);
+      
+      // Delete task via API
+      await api.delete(`/tasks/${deletingTask.id}`);
+
+      // Remove task from the list
+      setTasks(prev => prev.filter(task => task.id !== deletingTask.id));
+      
+      // Close modal
+      handleCloseDeleteModal();
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.error || err.message || 'Failed to delete task';
+        // You could show an error toast here, for now we'll just log it
+        console.error('Delete error:', message);
+      } else {
+        console.error('Delete error:', 'An unexpected error occurred');
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <PageLayout 
       title="Tasks" 
@@ -162,6 +207,7 @@ export default function TasksPage() {
                   key={task.id} 
                   task={task} 
                   onEdit={handleOpenEditModal}
+                  onDelete={handleOpenDeleteModal}
                 />
               ))}
             </div>
@@ -198,6 +244,18 @@ export default function TasksPage() {
           } : undefined}
         />
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleDeleteTask}
+        title="Delete Task"
+        message={deletingTask ? `Are you sure you want to delete "${deletingTask.title}"? This action cannot be undone.` : ''}
+        confirmText="Delete"
+        confirmVariant="danger-outline"
+        isLoading={isDeleting}
+      />
     </PageLayout>
   );
 }
