@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import { Task } from "@task-manager/shared";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import ErrorState from "@/components/ui/ErrorState";
-import EmptyState from "@/components/ui/EmptyState";
 import PageLayout from "@/components/ui/PageLayout";
 import TaskCard from "@/components/TaskCard";
+import EmptyState from "@/components/ui/EmptyState";
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -33,27 +32,37 @@ export default function TasksPage() {
     fetchTasks();
   }, []);
 
-  if (isLoading) {
-    return <LoadingSpinner message="Loading tasks..." />;
-  }
-
-  if (error) {
-    return <ErrorState message={error} />;
-  }
-
   return (
     <PageLayout title="Tasks" description="Manage your tasks efficiently">
-      {tasks.length === 0 ? (
-        <EmptyState 
-          title="No tasks yet" 
-          description="Create your first task to get started" 
-        />
-      ) : (
-        <div className="space-y-3">
-          {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
+      {isLoading && (
+        <LoadingSpinner message="Loading tasks..." />
+      )}
+      
+      {error && (
+        <div className="flex items-center justify-center py-16">
+          <div className="text-center">
+            <div className="text-red-400 text-4xl mb-4">⚠️</div>
+            <h3 className="text-lg font-semibold text-neutral-100 mb-2">Error loading tasks</h3>
+            <p className="text-neutral-500 text-sm">{error}</p>
+          </div>
         </div>
+      )}
+
+      {!isLoading && !error && (
+        <>
+          {tasks.length === 0 ? (
+            <EmptyState 
+              title="No tasks yet" 
+              description="Create your first task to get started" 
+            />
+          ) : (
+            <div className="space-y-3">
+              {tasks.map((task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </PageLayout>
   );
