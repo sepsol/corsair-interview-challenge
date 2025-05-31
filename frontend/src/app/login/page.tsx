@@ -1,44 +1,64 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { LoginRequest, AuthResponse } from "@task-manager/shared";
 import AuthForm, { AuthFormData } from "@/components/AuthForm";
+import api from "@/services/api";
 
 /**
  * Login page component with centered form
  * 
  * Features:
  * - Uses reusable AuthForm component
+ * - Calls actual login API endpoint
+ * - Stores authentication token on success
+ * - Redirects to tasks page after successful login
  * - Centered layout with responsive design
  * - Loading states and error handling
- * - Form validation handled by AuthForm
  * 
  * @returns The login page component
  */
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleLogin = async (data: AuthFormData) => {
     try {
       setIsLoading(true);
       setError(null);
 
-      // TODO: Replace with actual API call to /api/auth/login
-      console.log("Login attempt:", data);
+      // Call the login API
+      const loginData: LoginRequest = {
+        username: data.username,
+        password: data.password,
+      };
+
+      const response = await api.post<AuthResponse>('/auth/login', loginData);
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Store the authentication token
+      localStorage.setItem('auth_token', response.data.token);
       
-      // Simulate success/error for testing
-      if (data.username === "demo" && data.password === "password") {
-        console.log("Login successful");
-        // TODO: Handle successful login (redirect, store token, etc.)
-      } else {
-        throw new Error("Invalid credentials");
-      }
+      // Store user information (optional)
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      console.log("Login successful:", response.data.user);
+      
+      // Redirect to tasks page
+      router.push('/tasks');
       
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+      let errorMessage = "An unexpected error occurred";
+      
+      if (axios.isAxiosError(err)) {
+        // Handle Axios-specific errors
+        errorMessage = err.response?.data?.error || err.message || "Login failed";
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
       setError(errorMessage);
       console.error("Login error:", errorMessage);
     } finally {
