@@ -10,6 +10,8 @@ interface PageLayoutProps {
   description?: string;
   /** The main content to render in the page body */
   children: ReactNode;
+  /** Optional action button to display in the header */
+  headerAction?: ReactNode;
 }
 
 /**
@@ -30,7 +32,7 @@ interface PageLayoutProps {
  * </PageLayout>
  * ```
  */
-export default function PageLayout({ title, description, children }: PageLayoutProps) {
+export default function PageLayout({ title, description, children, headerAction }: PageLayoutProps) {
   return (
     <div className="min-h-screen bg-black">
       {/* Header */}
@@ -43,6 +45,11 @@ export default function PageLayout({ title, description, children }: PageLayoutP
                 <p className="text-neutral-500 mt-1">{description}</p>
               )}
             </div>
+            {headerAction && (
+              <div className="flex-shrink-0">
+                {headerAction}
+              </div>
+            )}
           </div>
         </div>
       </div>
