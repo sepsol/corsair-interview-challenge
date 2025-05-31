@@ -9,6 +9,7 @@ import TaskCard from "@/components/TaskCard";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
+import TaskForm, { TaskFormData } from "@/components/TaskForm";
 import api from "@/services/api";
 
 /**
@@ -28,9 +29,7 @@ export default function TasksPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ title: '', description: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -56,46 +55,35 @@ export default function TasksPage() {
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
-    setFormData({ title: '', description: '' });
-    setSubmitError(null);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setFormData({ title: '', description: '' });
-    setSubmitError(null);
     setIsSubmitting(false);
   };
 
-  const handleSubmit = async () => {
-    // Basic validation
-    if (!formData.title.trim()) {
-      setSubmitError('Title is required');
-      return;
-    }
-
+  const handleCreateTask = async (formData: TaskFormData) => {
+    setIsSubmitting(true);
+    
     try {
-      setIsSubmitting(true);
-      setSubmitError(null);
-
       // Create task via API
       const response = await api.post<Task>('/tasks', {
-        title: formData.title.trim(),
-        description: formData.description.trim() || '',
+        title: formData.title,
+        description: formData.description || '',
         status: 'pending'
       });
 
       // Add new task to the list (prepend to show it at the top)
       setTasks(prev => [response.data, ...prev]);
       
-      // Close modal and reset form
+      // Close modal
       handleCloseModal();
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const message = err.response?.data?.error || err.message || 'Failed to create task';
-        setSubmitError(message);
+        throw new Error(message);
       } else {
-        setSubmitError('An unexpected error occurred');
+        throw new Error('An unexpected error occurred');
       }
     } finally {
       setIsSubmitting(false);
@@ -150,65 +138,11 @@ export default function TasksPage() {
         title="Create New Task"
         size="md"
       >
-        <div className="space-y-4">
-          {/* Error Message */}
-          {submitError && (
-            <div className="bg-red-900/20 border border-red-700/50 rounded-md p-3">
-              <p className="text-red-300 text-sm">{submitError}</p>
-            </div>
-          )}
-
-          {/* Title Input */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-200 mb-2">
-              Title *
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-              placeholder="Enter task title..."
-              required
-            />
-          </div>
-
-          {/* Description Input */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-200 mb-2">
-              Description
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              disabled={isSubmitting}
-              rows={3}
-              className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:border-transparent resize-vertical disabled:opacity-50 disabled:cursor-not-allowed"
-              placeholder="Enter task description (optional)..."
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              onClick={handleSubmit}
-              loading={isSubmitting}
-              disabled={isSubmitting}
-              className="flex-1"
-            >
-              Create Task
-            </Button>
-            <Button
-              onClick={handleCloseModal}
-              variant="secondary"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
+        <TaskForm
+          onSubmit={handleCreateTask}
+          onCancel={handleCloseModal}
+          isSubmitting={isSubmitting}
+        />
       </Modal>
     </PageLayout>
   );
