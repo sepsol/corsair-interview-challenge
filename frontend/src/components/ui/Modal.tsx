@@ -1,6 +1,7 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
+import styles from './Modal.module.scss';
 
 /**
  * Props for the Modal component
@@ -52,6 +53,25 @@ export default function Modal({
   children,
   size = 'md'
 }: ModalProps) {
+  const [isClosing, setIsClosing] = useState(false);
+  const [shouldRender, setShouldRender] = useState(isOpen);
+
+  // Handle modal state changes
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+      setIsClosing(false);
+    } else if (shouldRender) {
+      setIsClosing(true);
+      // Wait for exit animation to complete before removing from DOM
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+        setIsClosing(false);
+      }, 150); // Match exit animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, shouldRender]);
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -71,14 +91,17 @@ export default function Modal({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop with blur */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+          className={clsx(
+            'fixed inset-0 bg-black/50 backdrop-blur-sm',
+            isClosing ? styles.backdropExit : styles.backdropEnter
+          )}
           onClick={onClose}
           aria-hidden="true"
         />
@@ -86,7 +109,8 @@ export default function Modal({
         {/* Modal */}
         <div
           className={clsx(
-            'relative bg-neutral-900 border border-neutral-700/50 rounded-lg shadow-xl w-full transform transition-all',
+            'relative bg-neutral-900 border border-neutral-700/50 rounded-lg shadow-xl w-full transform',
+            isClosing ? styles.modalExit : styles.modalEnter,
             {
               'max-w-sm': size === 'sm',
               'max-w-md': size === 'md', 

@@ -1,0 +1,58 @@
+/* Modal enter animation */
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1rem, 0) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Modal exit animation */
+@keyframes modalExit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, 0.5rem, 0) scale(0.95);
+  }
+}
+
+/* Backdrop animations */
+@keyframes backdropEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdropExit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.modalEnter {
+  animation: modalEnter 200ms ease-out;
+}
+
+.modalExit {
+  animation: modalExit 150ms ease-in;
+}
+
+.backdropEnter {
+  animation: backdropEnter 200ms ease-out;
+}
+
+.backdropExit {
+  animation: backdropExit 150ms ease-in;
+}
