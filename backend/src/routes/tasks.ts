@@ -1,10 +1,15 @@
+ 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import express from 'express';
 import { tasks, getNextTaskId } from '@/data/tasks';
 import { CreateTaskRequest, Task, UpdateTaskRequest } from '@task-manager/shared';
 import { ErrorResponse } from '@/types/api';
+import { authenticateToken } from '@/middleware/auth';
 
 const router = express.Router();
+
+// Apply authentication middleware to all routes
+router.use(authenticateToken);
 
 /**
  * GET /api/tasks
