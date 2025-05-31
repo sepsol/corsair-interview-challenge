@@ -15,7 +15,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
   if (!token) {
-    res.status(401).json({ error: 'Access token required' });
+    res.status(401).json({ error: 'Access denied' });
     return;
   }
 
@@ -24,7 +24,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     const user = getUserById(decoded.userId);
     
     if (!user) {
-      res.status(401).json({ error: 'Invalid token - user not found' });
+      res.status(401).json({ error: 'Invalid credentials' });
       return;
     }
 
@@ -37,7 +37,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     next();
   } catch (error) {
     console.error('Token verification error:', error);
-    res.status(403).json({ error: 'Invalid or expired token' });
+    res.status(403).json({ error: 'Invalid or expired session' });
     return;
   }
 };
