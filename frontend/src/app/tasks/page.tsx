@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { Task } from "@task-manager/shared";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLayout from "@/components/ui/PageLayout";
 import TaskCard from "@/components/TaskCard";
 import EmptyState from "@/components/ui/EmptyState";
+import api from "@/services/api";
 
 /**
  * Main tasks page component that displays a list of tasks
  * 
  * Features:
- * - Fetches tasks from the API on component mount
+ * - Fetches tasks from the API using axios on component mount
  * - Displays loading state while fetching
- * - Shows error state if API request fails
+ * - Shows error state with detailed axios error handling
  * - Renders empty state when no tasks exist
  * - Lists all tasks in individual TaskCard components
  * 
@@ -28,14 +30,16 @@ export default function TasksPage() {
     const fetchTasks = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch tasks');
-        }
-        const data = await response.json();
-        setTasks(data);
+        const response = await api.get<Task[]>('/tasks');
+        setTasks(response.data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        if (axios.isAxiosError(err)) {
+          // Handle Axios-specific errors
+          const message = err.response?.data?.error || err.message || 'Failed to fetch tasks';
+          setError(message);
+        } else {
+          setError('An unexpected error occurred');
+        }
       } finally {
         setIsLoading(false);
       }
