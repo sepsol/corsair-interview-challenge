@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Task } from "task-manager-shared";
+import { Task } from "@task-manager/shared";
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);

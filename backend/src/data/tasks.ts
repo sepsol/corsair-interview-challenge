@@ -1,4 +1,4 @@
-import { Task } from 'task-manager-shared';
+import { Task } from '@task-manager/shared';
 
 /**
  * In-memory task storage
