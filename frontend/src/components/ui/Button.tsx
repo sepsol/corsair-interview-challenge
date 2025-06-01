@@ -123,7 +123,7 @@ export default function Button({
     <button
       className={clsx(
         // Base styles
-        'inline-flex items-center justify-center font-medium rounded-md focus:outline-none border',
+        'inline-flex items-center justify-center font-medium rounded-md focus:outline-none border box-border',
         // Size styles
         {
           'px-3 py-1.5 text-sm': size === 'sm',
