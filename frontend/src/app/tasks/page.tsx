@@ -83,8 +83,8 @@ export default function TasksPage() {
     
     console.log('User logged out');
     
-    // Redirect to login page
-    router.push('/login');
+    // Redirect to root page (which will redirect to login)
+    router.push('/');
   };
 
   const handleOpenCreateModal = () => {
