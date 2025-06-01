@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-import { Task } from "@task-manager/shared";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTasks } from "@/contexts/TasksContext";
+import { Task } from "@task-manager/shared";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLayout from "@/components/ui/PageLayout";
 import TaskCard from "@/components/TaskCard";
@@ -14,7 +13,6 @@ import Modal from "@/components/ui/Modal";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import TaskForm from "@/components/TaskForm";
 import { TaskFormData } from "@/schemas/taskSchema";
-import api from "@/services/api";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 
@@ -32,50 +30,14 @@ import ProtectedRoute from "@/components/ProtectedRoute";
  */
 function TasksPageContent() {
   const { user, logout } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { tasks, isLoading, error, createTask, updateTask, deleteTask } = useTasks();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [toggleLoadingTasks, setToggleLoadingTasks] = useState<Set<string>>(new Set());
-  const router = useRouter();
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        setIsLoading(true);
-        const response = await api.get<Task[]>('/tasks');
-        setTasks(response.data);
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          // Check if it's an authentication error
-          if (err.response?.status === 401 || err.response?.status === 403) {
-            if (process.env.NODE_ENV === 'development') {
-              console.log('Authentication expired, redirecting to root');
-            }
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('user');
-            router.push('/');
-            return;
-          }
-          
-          // Handle other API errors
-          const message = err.response?.data?.error || err.message || 'Failed to fetch tasks';
-          setError(message);
-        } else {
-          setError('An unexpected error occurred');
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTasks();
-  }, [router]);
 
   const handleLogout = () => {
     logout();
@@ -115,25 +77,10 @@ function TasksPageContent() {
 
   const handleCreateTask = async (formData: TaskFormData) => {
     try {
-      // Create task via API
-      const response = await api.post<Task>('/tasks', {
-        title: formData.title,
-        description: formData.description || '',
-        status: 'pending'
-      });
-
-      // Add new task to the list (prepend to show it at the top)
-      setTasks(prev => [response.data, ...prev]);
-      
-      // Close modal
+      await createTask(formData);
       handleCloseCreateModal();
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.error || err.message || 'Failed to create task';
-        throw new Error(message);
-      } else {
-        throw new Error('An unexpected error occurred');
-      }
+      throw err; // Re-throw for form error handling
     }
   };
 
@@ -141,26 +88,10 @@ function TasksPageContent() {
     if (!editingTask) return;
     
     try {
-      // Update task via API
-      const response = await api.put<Task>(`/tasks/${editingTask.id}`, {
-        title: formData.title,
-        description: formData.description || '',
-      });
-
-      // Update the task in the list
-      setTasks(prev => prev.map(task => 
-        task.id === editingTask.id ? response.data : task
-      ));
-      
-      // Close modal
+      await updateTask(editingTask.id, formData);
       handleCloseEditModal();
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.error || err.message || 'Failed to update task';
-        throw new Error(message);
-      } else {
-        throw new Error('An unexpected error occurred');
-      }
+      throw err; // Re-throw for form error handling
     }
   };
 
@@ -169,75 +100,18 @@ function TasksPageContent() {
     
     try {
       setIsDeleting(true);
-      
-      // Delete task via API
-      await api.delete(`/tasks/${deletingTask.id}`);
-
-      // Remove task from the list
-      setTasks(prev => prev.filter(task => task.id !== deletingTask.id));
-      
-      // Close modal
+      await deleteTask(deletingTask.id);
       handleCloseDeleteModal();
     } catch (err) {
-      let errorMessage = 'Failed to delete task';
-      if (axios.isAxiosError(err)) {
-        errorMessage = err.response?.data?.error || err.message || errorMessage;
-      }
-      
-      // Set error state for user feedback
-      setError(errorMessage);
+      // Error handling is managed by TasksContext
       if (process.env.NODE_ENV === 'development') {
-        console.error('Delete error:', errorMessage);
+        console.error('Delete error:', err);
       }
-      
-      // Clear error after 5 seconds
-      setTimeout(() => setError(null), 5000);
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const handleToggleTaskStatus = async (task: Task) => {
-    // Add task to loading set
-    setToggleLoadingTasks(prev => new Set(prev).add(task.id));
-    
-    try {
-      const newStatus = task.status === 'completed' ? 'pending' : 'completed';
-      
-      // Update task status via API
-      const response = await api.put<Task>(`/tasks/${task.id}`, {
-        title: task.title,
-        description: task.description,
-        status: newStatus
-      });
-
-      // Update the task in the list
-      setTasks(prev => prev.map(t => 
-        t.id === task.id ? response.data : t
-      ));
-    } catch (err) {
-      let errorMessage = 'Failed to update task status';
-      if (axios.isAxiosError(err)) {
-        errorMessage = err.response?.data?.error || err.message || errorMessage;
-      }
-      
-      // Set error state (you could implement a toast/notification system here)
-      setError(errorMessage);
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Status toggle error:', errorMessage);
-      }
-      
-      // Clear error after 5 seconds
-      setTimeout(() => setError(null), 5000);
-    } finally {
-      // Remove task from loading set
-      setToggleLoadingTasks(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(task.id);
-        return newSet;
-      });
-    }
-  };
 
   return (
     <PageLayout 
@@ -308,8 +182,6 @@ function TasksPageContent() {
                   task={task} 
                   onEdit={handleOpenEditModal}
                   onDelete={handleOpenDeleteModal}
-                  onToggleStatus={handleToggleTaskStatus}
-                  isToggleLoading={toggleLoadingTasks.has(task.id)}
                 />
               ))}
             </div>

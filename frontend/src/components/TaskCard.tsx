@@ -1,4 +1,5 @@
 import { Task } from "@task-manager/shared";
+import { useTasks } from "@/contexts/TasksContext";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
 
@@ -12,10 +13,6 @@ interface TaskCardProps {
   onEdit?: (task: Task) => void;
   /** Callback function to handle deleting a task */
   onDelete?: (task: Task) => void;
-  /** Callback function to handle toggling task status */
-  onToggleStatus?: (task: Task) => void;
-  /** Whether the status toggle is currently loading */
-  isToggleLoading?: boolean;
 }
 
 /**
@@ -36,7 +33,9 @@ interface TaskCardProps {
  * <TaskCard task={taskObject} />
  * ```
  */
-export default function TaskCard({ task, onEdit, onDelete, onToggleStatus, isToggleLoading = false }: TaskCardProps) {
+export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
+  const { toggleTaskStatus, toggleLoadingTasks } = useTasks();
+  const isToggleLoading = toggleLoadingTasks.has(task.id);
   const handleEdit = () => {
     if (onEdit) {
       onEdit(task);
@@ -54,10 +53,8 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleStatus, isTog
   };
 
   const handleCheckboxToggle = () => {
-    if (!isToggleLoading && onToggleStatus) {
-      onToggleStatus(task);
-    } else if (!isToggleLoading) {
-      console.log('Toggle status for task:', task.id, task.title);
+    if (!isToggleLoading) {
+      toggleTaskStatus(task);
     }
   };
 
