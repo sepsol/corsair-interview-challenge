@@ -19,7 +19,7 @@ const initializeDefaultUser = async () => {
     const hashedPassword = await bcrypt.hash('password123', 10);
     users.push({
       id: '1',
-      username: 'admin',
+      username: 'defaultuser',
       password: hashedPassword,
       createdAt: new Date().toISOString()
     });
