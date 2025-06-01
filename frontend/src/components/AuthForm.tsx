@@ -150,13 +150,13 @@ export default function AuthForm({
               <>
                 Already have an account?{" "}
                 <span 
-                  className="cursor-pointer transition-colors"
-                  style={{ color: 'var(--muted-foreground)' }}
+                  className="cursor-pointer transition-all duration-200 font-medium hover:underline"
+                  style={{ color: 'var(--primary)' }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = 'var(--foreground)';
+                    e.currentTarget.style.color = 'var(--ring)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = 'var(--muted-foreground)';
+                    e.currentTarget.style.color = 'var(--primary)';
                   }}
                   onClick={onSwitchAuthMode}
                 >
@@ -167,13 +167,13 @@ export default function AuthForm({
               <>
                 Don&apos;t have an account?{" "}
                 <span 
-                  className="cursor-pointer transition-colors"
-                  style={{ color: 'var(--muted-foreground)' }}
+                  className="cursor-pointer transition-all duration-200 font-medium hover:underline"
+                  style={{ color: 'var(--primary)' }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = 'var(--foreground)';
+                    e.currentTarget.style.color = 'var(--ring)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = 'var(--muted-foreground)';
+                    e.currentTarget.style.color = 'var(--primary)';
                   }}
                   onClick={onSwitchAuthMode}
                 >
