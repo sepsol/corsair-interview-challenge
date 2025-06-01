@@ -32,7 +32,7 @@ export default function ErrorState({ message, title = "Error loading tasks" }: E
       <div className="text-center">
         <div className="text-red-400 text-6xl mb-4">⚠️</div>
         <h2 className="text-xl font-semibold text-neutral-100 mb-2">{title}</h2>
-        <p className="text-neutral-500">{message}</p>
+        <p className="text-neutral-400">{message}</p>
       </div>
     </div>
   );

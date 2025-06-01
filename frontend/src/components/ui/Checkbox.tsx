@@ -80,11 +80,11 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
           // State variants
           {
             // Unchecked state
-            'border-neutral-600 bg-neutral-800 hover:border-neutral-500': !checked && !disabled,
+            'border-neutral-400 bg-neutral-700 hover:border-neutral-400': !checked && !disabled,
             // Checked state
-            'border-neutral-400 bg-white hover:bg-neutral-100': checked && !disabled,
+            'border-neutral-400 bg-white hover:bg-neutral-200': checked && !disabled,
             // Disabled state
-            'border-neutral-700 bg-neutral-900 cursor-not-allowed opacity-50': disabled,
+            'border-neutral-400 bg-neutral-900 cursor-not-allowed opacity-50': disabled,
             // Cursor
             'cursor-pointer': !disabled,
           },
@@ -95,7 +95,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
         {checked && (
           <svg
             className={clsx(
-              'text-neutral-800',
+              'text-neutral-700',
               {
                 'w-2.5 h-2.5': size === 'sm',
                 'w-3 h-3': size === 'md',

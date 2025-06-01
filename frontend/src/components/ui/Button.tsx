@@ -56,12 +56,12 @@ export default function Button({
         // Variant styles (with conditional hover effects)
         {
           // Primary variant
-          'bg-neutral-100 text-neutral-900 focus:ring-neutral-400': variant === 'primary',
-          'hover:bg-neutral-200': variant === 'primary' && !disabled && !loading,
+          'bg-neutral-200 text-neutral-900 focus:ring-neutral-400': variant === 'primary',
+          'hover:bg-neutral-400': variant === 'primary' && !disabled && !loading,
           
           // Secondary variant
-          'bg-neutral-800 text-neutral-200 border border-neutral-700 focus:ring-neutral-500': variant === 'secondary',
-          'hover:bg-neutral-700 hover:border-neutral-600': variant === 'secondary' && !disabled && !loading,
+          'bg-neutral-700 text-neutral-200 border border-neutral-700 focus:ring-neutral-400': variant === 'secondary',
+          'hover:bg-neutral-900 hover:border-neutral-400': variant === 'secondary' && !disabled && !loading,
           
           // Danger variant
           'bg-red-600 text-white focus:ring-red-500': variant === 'danger',

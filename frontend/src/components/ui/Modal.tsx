@@ -99,7 +99,7 @@ export default function Modal({
       <div className="flex min-h-full items-center justify-center p-4">
         <div 
           className={clsx(
-            'fixed inset-0 bg-black/50 backdrop-blur-sm',
+            'fixed inset-0 bg-black backdrop-blur-sm',
             isClosing ? styles.backdropExit : styles.backdropEnter
           )}
           onClick={onClose}
@@ -109,7 +109,7 @@ export default function Modal({
         {/* Modal */}
         <div
           className={clsx(
-            'relative bg-neutral-900 border border-neutral-700/50 rounded-lg shadow-xl w-full transform',
+            'relative bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl w-full transform',
             isClosing ? styles.modalExit : styles.modalEnter,
             {
               'max-w-sm': size === 'sm',
@@ -122,11 +122,11 @@ export default function Modal({
         >
           {/* Header */}
           {title && (
-            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-700/50">
-              <h2 className="text-lg font-semibold text-neutral-100">{title}</h2>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-700">
+              <h2 className="text-lg font-semibold text-neutral-200">{title}</h2>
               <button
                 onClick={onClose}
-                className="text-neutral-400 hover:text-neutral-200 transition-colors p-1 rounded-md hover:bg-neutral-800 cursor-pointer"
+                className="text-neutral-400 hover:text-neutral-200 transition-colors p-1 rounded-md hover:bg-neutral-700 cursor-pointer"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

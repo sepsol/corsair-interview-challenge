@@ -60,7 +60,7 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
 
 
   return (
-    <div className="group bg-neutral-900 border border-neutral-700/60 rounded-md p-5 hover:bg-neutral-800/80 hover:border-neutral-600/70 transition-all duration-200">
+    <div className="group bg-neutral-900 border border-neutral-700 rounded-md p-5 hover:bg-neutral-700/80 hover:border-neutral-400 transition-all duration-200">
       {/* Title row with checkbox and action buttons */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3 flex-1 mr-3">
@@ -80,7 +80,7 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
           <h3 className={`font-medium ${
             task.status === 'completed' 
               ? 'text-neutral-400 line-through' 
-              : 'text-neutral-100'
+              : 'text-neutral-200'
           }`}>
             {task.title}
           </h3>
@@ -114,7 +114,7 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
       {/* Description and metadata */}
       <div>
         <p className="text-neutral-400 text-sm mb-3 leading-relaxed">{task.description}</p>
-        <div className="flex items-center gap-4 text-xs text-neutral-600">
+        <div className="flex items-center gap-4 text-xs text-neutral-400">
           <span>Created {new Date(task.createdAt).toLocaleDateString()}</span>
           {task.status === 'completed' && (
             <span className="text-green-400/60 font-medium">✓ Completed</span>

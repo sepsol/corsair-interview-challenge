@@ -72,7 +72,7 @@ export default function ConfirmationModal({
     >
       <div className="space-y-4">
         {/* Message */}
-        <p className="text-neutral-300 text-sm leading-relaxed">
+        <p className="text-neutral-200 text-sm leading-relaxed">
           {message}
         </p>
 

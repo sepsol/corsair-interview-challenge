@@ -41,7 +41,7 @@ export default function EmptyState({
     <div className="text-center py-16">
       <div className="text-6xl mb-4">{icon}</div>
       <h3 className="text-lg font-medium text-neutral-100 mb-2">{title}</h3>
-      <p className="text-neutral-500 mb-6">{description}</p>
+      <p className="text-neutral-400 mb-6">{description}</p>
     </div>
   );
 }

@@ -79,10 +79,10 @@ export default function AuthForm({
     <div className="max-w-md w-full space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-neutral-100">
+        <h1 className="text-3xl font-bold text-neutral-200">
           {formTitle}
         </h1>
-        <p className="mt-2 text-sm text-neutral-500">
+        <p className="mt-2 text-sm text-neutral-400">
           {formDescription}
         </p>
       </div>
@@ -96,7 +96,7 @@ export default function AuthForm({
 
         {/* Username field */}
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-neutral-300 mb-2">
+          <label htmlFor="username" className="block text-sm font-medium text-neutral-200 mb-2">
             Username
           </label>
           <TextInput
@@ -114,7 +114,7 @@ export default function AuthForm({
 
         {/* Password field */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-neutral-300 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-neutral-200 mb-2">
             Password
           </label>
           <TextInput
@@ -145,12 +145,12 @@ export default function AuthForm({
       {/* Additional info - only show if navigation callback is provided */}
       {onSwitchAuthMode && (
         <div className="text-center">
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-400">
             {isRegister ? (
               <>
                 Already have an account?{" "}
                 <span 
-                  className="text-neutral-400 hover:text-neutral-300 cursor-pointer transition-colors"
+                  className="text-neutral-400 hover:text-neutral-200 cursor-pointer transition-colors"
                   onClick={onSwitchAuthMode}
                 >
                   Sign in
@@ -160,7 +160,7 @@ export default function AuthForm({
               <>
                 Don&apos;t have an account?{" "}
                 <span 
-                  className="text-neutral-400 hover:text-neutral-300 cursor-pointer transition-colors"
+                  className="text-neutral-400 hover:text-neutral-200 cursor-pointer transition-colors"
                   onClick={onSwitchAuthMode}
                 >
                   Sign up

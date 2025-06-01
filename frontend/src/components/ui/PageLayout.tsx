@@ -38,13 +38,13 @@ export default function PageLayout({ title, description, children, headerAction,
   return (
     <div className="min-h-screen bg-black">
       {/* Header */}
-      <div className="bg-neutral-900 border-b border-neutral-700/50">
+      <div className="bg-neutral-900 border-b border-neutral-700">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-neutral-100">{title}</h1>
+              <h1 className="text-2xl font-semibold text-neutral-200">{title}</h1>
               {description && (
-                <p className="text-neutral-500 mt-1">{description}</p>
+                <p className="text-neutral-400 mt-1">{description}</p>
               )}
             </div>
             <div className="flex items-center gap-4">

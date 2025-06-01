@@ -45,8 +45,8 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(({
     <input
       ref={ref}
       className={clsx(
-        'w-full px-3 py-2 bg-neutral-800 border rounded-md',
-        'text-neutral-100 placeholder-neutral-500',
+        'w-full px-3 py-2 bg-neutral-700 border rounded-md',
+        'text-neutral-200 placeholder-neutral-400',
         'focus:outline-none focus:ring-2 focus:border-transparent',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         // Error states

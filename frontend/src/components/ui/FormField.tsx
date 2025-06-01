@@ -49,7 +49,7 @@ export default function FormField({
   return (
     <div>
       <label className={`block text-sm font-medium mb-2 ${
-        disabled ? 'text-neutral-500' : 'text-neutral-200'
+        disabled ? 'text-neutral-400' : 'text-neutral-200'
       }`}>
         {label}
         {required && <span className="text-red-400 ml-1">*</span>}
