@@ -2,17 +2,22 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { RegisterRequest, AuthResponse } from "@task-manager/shared";
 import AuthForm, { AuthFormData } from "@/components/AuthForm";
+import api from "@/services/api";
 
 /**
  * Register page component with centered form
  * 
  * Features:
  * - Uses reusable AuthForm component in register mode
+ * - Calls actual register API endpoint
+ * - Automatically logs user in after successful registration
+ * - Redirects to tasks page after successful registration
  * - Centered layout with responsive design
  * - Loading states and error handling
  * - Form validation handled by AuthForm
- * - Console logging for development (API integration pending)
  * 
  * @returns The register page component
  */
@@ -26,19 +31,35 @@ export default function RegisterPage() {
       setIsLoading(true);
       setError(null);
 
-      // TODO: Replace with actual API call to /api/auth/register
-      console.log("Register attempt:", data);
+      // Call the registration API
+      const registerData: RegisterRequest = {
+        username: data.username,
+        password: data.password,
+      };
+
+      const response = await api.post<AuthResponse>('/auth/register', registerData);
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Store the authentication token (auto-login)
+      localStorage.setItem('auth_token', response.data.token);
       
-      // Simulate success for testing
-      console.log("Registration successful for user:", data.username);
+      // Store user information
+      localStorage.setItem('user', JSON.stringify(response.data.user));
       
-      // TODO: Handle successful registration (redirect, store token, etc.)
+      console.log("Registration successful:", response.data.user);
+      
+      // Redirect to tasks page
+      router.push('/tasks');
       
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+      let errorMessage = "An unexpected error occurred";
+      
+      if (axios.isAxiosError(err)) {
+        // Handle Axios-specific errors
+        errorMessage = err.response?.data?.error || err.message || "Registration failed";
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
       setError(errorMessage);
       console.error("Registration error:", errorMessage);
     } finally {
