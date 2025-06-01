@@ -3,18 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { LoginRequest, AuthResponse } from "@task-manager/shared";
+import { useAuth } from "@/contexts/AuthContext";
 import AuthForm, { AuthFormData } from "@/components/AuthForm";
-import api from "@/services/api";
 
 /**
  * Login page component with centered form
  * 
  * Features:
  * - Uses reusable AuthForm component
- * - Calls actual login API endpoint
- * - Stores authentication token on success
- * - Redirects to tasks page after successful login
+ * - Uses AuthContext for login functionality
  * - Centered layout with responsive design
  * - Loading states and error handling
  * 
@@ -23,6 +20,7 @@ import api from "@/services/api";
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { login } = useAuth();
   const router = useRouter();
 
   const handleLogin = async (data: AuthFormData) => {
@@ -30,32 +28,12 @@ export default function LoginPage() {
       setIsLoading(true);
       setError(null);
 
-      // Call the login API
-      const loginData: LoginRequest = {
-        username: data.username,
-        password: data.password,
-      };
-
-      const response = await api.post<AuthResponse>('/auth/login', loginData);
-      
-      // Store the authentication token
-      localStorage.setItem('auth_token', response.data.token);
-      
-      // Store user information (optional)
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log("Login successful:", response.data.user);
-      }
-      
-      // Redirect to tasks page
-      router.push('/tasks');
+      await login(data);
       
     } catch (err) {
       let errorMessage = "An unexpected error occurred";
       
       if (axios.isAxiosError(err)) {
-        // Handle Axios-specific errors
         errorMessage = err.response?.data?.error || err.message || "Login failed";
       } else if (err instanceof Error) {
         errorMessage = err.message;

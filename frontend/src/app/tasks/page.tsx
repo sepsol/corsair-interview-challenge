@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { Task, User } from "@task-manager/shared";
+import { Task } from "@task-manager/shared";
+import { useAuth } from "@/contexts/AuthContext";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLayout from "@/components/ui/PageLayout";
 import TaskCard from "@/components/TaskCard";
@@ -16,13 +17,6 @@ import { TaskFormData } from "@/schemas/taskSchema";
 import api from "@/services/api";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-/**
- * Props for the TasksPageContent component
- */
-interface TasksPageContentProps {
-  /** The authenticated user */
-  user: User;
-}
 
 /**
  * Main tasks page component that displays a list of tasks
@@ -36,7 +30,8 @@ interface TasksPageContentProps {
  * 
  * @returns The complete tasks page with header and task list
  */
-function TasksPageContent({ user }: TasksPageContentProps) {
+function TasksPageContent() {
+  const { user, logout } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,16 +78,7 @@ function TasksPageContent({ user }: TasksPageContentProps) {
   }, [router]);
 
   const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user');
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log('User logged out');
-    }
-    
-    // Redirect to root page (which will redirect to login)
-    router.push('/');
+    logout();
   };
 
   const handleOpenCreateModal = () => {
@@ -280,7 +266,7 @@ function TasksPageContent({ user }: TasksPageContentProps) {
                     strokeLinecap="round" 
                     strokeLinejoin="round" 
                     strokeWidth={2} 
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3v1" 
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4" 
                   />
                 </svg>
                 Logout
@@ -381,11 +367,9 @@ function TasksPageContent({ user }: TasksPageContentProps) {
  * Handles authentication before rendering the page content
  */
 export default function TasksPage() {
-  const [user, setUser] = useState<User | null>(null);
-
   return (
-    <ProtectedRoute onUserLoaded={setUser}>
-      {user && <TasksPageContent user={user} />}
+    <ProtectedRoute>
+      <TasksPageContent />
     </ProtectedRoute>
   );
 }
