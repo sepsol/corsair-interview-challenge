@@ -66,6 +66,10 @@ export default function LoginPage() {
     }
   };
 
+  const handleNavigateToRegister = () => {
+    router.push('/register');
+  };
+
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-6 py-12">
       <AuthForm
@@ -73,6 +77,7 @@ export default function LoginPage() {
         onSubmit={handleLogin}
         error={error}
         loading={isLoading}
+        onSwitchAuthMode={handleNavigateToRegister}
       />
     </div>
   );

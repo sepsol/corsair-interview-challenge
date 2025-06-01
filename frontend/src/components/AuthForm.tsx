@@ -23,6 +23,8 @@ interface AuthFormProps {
   error?: string | null;
   /** Whether the form is in a loading state */
   loading?: boolean;
+  /** Optional callback when user wants to switch between login and register modes */
+  onSwitchAuthMode?: () => void;
 }
 
 /**
@@ -44,6 +46,7 @@ export default function AuthForm({
   initialData,
   error,
   loading = false,
+  onSwitchAuthMode,
 }: AuthFormProps) {
   const isRegister = mode === "register";
   const schema = isRegister ? registerSchema : loginSchema;
@@ -139,26 +142,34 @@ export default function AuthForm({
         </Button>
       </form>
 
-      {/* Additional info */}
-      <div className="text-center">
-        <p className="text-sm text-neutral-500">
-          {isRegister ? (
-            <>
-              Already have an account?{" "}
-              <span className="text-neutral-400 hover:text-neutral-300 cursor-pointer transition-colors">
-                Sign in
-              </span>
-            </>
-          ) : (
-            <>
-              Don't have an account?{" "}
-              <span className="text-neutral-400 hover:text-neutral-300 cursor-pointer transition-colors">
-                Sign up
-              </span>
-            </>
-          )}
-        </p>
-      </div>
+      {/* Additional info - only show if navigation callback is provided */}
+      {onSwitchAuthMode && (
+        <div className="text-center">
+          <p className="text-sm text-neutral-500">
+            {isRegister ? (
+              <>
+                Already have an account?{" "}
+                <span 
+                  className="text-neutral-400 hover:text-neutral-300 cursor-pointer transition-colors"
+                  onClick={onSwitchAuthMode}
+                >
+                  Sign in
+                </span>
+              </>
+            ) : (
+              <>
+                Don&apos;t have an account?{" "}
+                <span 
+                  className="text-neutral-400 hover:text-neutral-300 cursor-pointer transition-colors"
+                  onClick={onSwitchAuthMode}
+                >
+                  Sign up
+                </span>
+              </>
+            )}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
