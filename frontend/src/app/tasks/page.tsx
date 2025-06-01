@@ -14,6 +14,7 @@ import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import TaskForm from "@/components/TaskForm";
 import { TaskFormData } from "@/schemas/taskSchema";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
 
 
 /**
@@ -122,8 +123,8 @@ function TasksPageContent() {
           {user && (
             <>
               <div className="text-right">
-                <p className="text-sm text-neutral-400">Welcome back,</p>
-                <p className="text-sm font-medium text-neutral-300">{user.username}</p>
+                <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Welcome back,</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>{user.username}</p>
               </div>
               <Button 
                 variant="secondary" 
@@ -140,16 +141,17 @@ function TasksPageContent() {
                     strokeLinecap="round" 
                     strokeLinejoin="round" 
                     strokeWidth={2} 
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4" 
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
                   />
                 </svg>
                 Logout
               </Button>
+              <Button onClick={handleOpenCreateModal}>
+                + Add Task
+              </Button>
+              <ThemeSwitcher />
             </>
           )}
-          <Button onClick={handleOpenCreateModal}>
-            + Add Task
-          </Button>
         </div>
       }
     >
@@ -160,9 +162,9 @@ function TasksPageContent() {
       {error && (
         <div className="flex items-center justify-center py-16">
           <div className="text-center">
-            <div className="text-red-400 text-4xl mb-4">⚠️</div>
-            <h3 className="text-lg font-semibold text-neutral-100 mb-2">Error loading tasks</h3>
-            <p className="text-neutral-500 text-sm">{error}</p>
+            <div className="text-4xl mb-4" style={{ color: 'var(--destructive)' }}>⚠️</div>
+            <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Error loading tasks</h3>
+            <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>{error}</p>
           </div>
         </div>
       )}

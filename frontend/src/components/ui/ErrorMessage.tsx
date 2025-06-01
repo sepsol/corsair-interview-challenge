@@ -27,8 +27,14 @@ interface ErrorMessageProps {
  */
 export default function ErrorMessage({ message, className = '' }: ErrorMessageProps) {
   return (
-    <div className={`bg-red-900/20 border border-red-700 rounded-md p-3 ${className}`}>
-      <p className="text-red-300 text-sm">{message}</p>
+    <div 
+      className={`border rounded-md p-3 ${className}`}
+      style={{
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderColor: 'var(--destructive)',
+      }}
+    >
+      <p className="text-sm" style={{ color: 'var(--destructive)' }}>{message}</p>
     </div>
   );
 }

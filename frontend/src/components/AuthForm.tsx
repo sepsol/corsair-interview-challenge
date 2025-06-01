@@ -79,10 +79,10 @@ export default function AuthForm({
     <div className="max-w-md w-full space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-neutral-200">
+        <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
           {formTitle}
         </h1>
-        <p className="mt-2 text-sm text-neutral-400">
+        <p className="mt-2 text-sm" style={{ color: 'var(--muted-foreground)' }}>
           {formDescription}
         </p>
       </div>
@@ -96,7 +96,7 @@ export default function AuthForm({
 
         {/* Username field */}
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-neutral-200 mb-2">
+          <label htmlFor="username" className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground)' }}>
             Username
           </label>
           <TextInput
@@ -108,13 +108,13 @@ export default function AuthForm({
             {...register("username")}
           />
           {errors.username && (
-            <p className="mt-1 text-sm text-red-400">{errors.username.message}</p>
+            <p className="mt-1 text-sm" style={{ color: 'var(--destructive)' }}>{errors.username.message}</p>
           )}
         </div>
 
         {/* Password field */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-neutral-200 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground)' }}>
             Password
           </label>
           <TextInput
@@ -126,7 +126,7 @@ export default function AuthForm({
             {...register("password")}
           />
           {errors.password && (
-            <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>
+            <p className="mt-1 text-sm" style={{ color: 'var(--destructive)' }}>{errors.password.message}</p>
           )}
         </div>
 
@@ -145,12 +145,19 @@ export default function AuthForm({
       {/* Additional info - only show if navigation callback is provided */}
       {onSwitchAuthMode && (
         <div className="text-center">
-          <p className="text-sm text-neutral-400">
+          <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
             {isRegister ? (
               <>
                 Already have an account?{" "}
                 <span 
-                  className="text-neutral-400 hover:text-neutral-200 cursor-pointer transition-colors"
+                  className="cursor-pointer transition-colors"
+                  style={{ color: 'var(--muted-foreground)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--foreground)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--muted-foreground)';
+                  }}
                   onClick={onSwitchAuthMode}
                 >
                   Sign in
@@ -160,7 +167,14 @@ export default function AuthForm({
               <>
                 Don&apos;t have an account?{" "}
                 <span 
-                  className="text-neutral-400 hover:text-neutral-200 cursor-pointer transition-colors"
+                  className="cursor-pointer transition-colors"
+                  style={{ color: 'var(--muted-foreground)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--foreground)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--muted-foreground)';
+                  }}
                   onClick={onSwitchAuthMode}
                 >
                   Sign up

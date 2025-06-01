@@ -60,7 +60,21 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
 
 
   return (
-    <div className="group bg-neutral-900 border border-neutral-700 rounded-md p-5 hover:bg-neutral-700/80 hover:border-neutral-400 transition-all duration-200">
+    <div 
+      className="group border rounded-md p-5 transition-all duration-200 hover:shadow-sm"
+      style={{ 
+        backgroundColor: 'var(--card)', 
+        borderColor: 'var(--border)' 
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--muted)';
+        e.currentTarget.style.borderColor = 'var(--accent)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--card)';
+        e.currentTarget.style.borderColor = 'var(--border)';
+      }}
+    >
       {/* Title row with checkbox and action buttons */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3 flex-1 mr-3">
@@ -72,16 +86,32 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
               disabled={isToggleLoading}
             />
             {isToggleLoading && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-3 h-3 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>
+              <div 
+                className="absolute pointer-events-none"
+                style={{
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)'
+                }}
+              >
+                <div 
+                  className="w-3 h-3 border-2 rounded-full animate-spin"
+                  style={{ 
+                    borderColor: 'var(--muted-foreground)',
+                    borderTopColor: 'transparent'
+                  }}
+                ></div>
               </div>
             )}
           </div>
-          <h3 className={`font-medium ${
-            task.status === 'completed' 
-              ? 'text-neutral-400 line-through' 
-              : 'text-neutral-200'
-          }`}>
+          <h3 
+            className={`font-medium ${task.status === 'completed' ? 'line-through' : ''}`}
+            style={{ 
+              color: task.status === 'completed' 
+                ? 'var(--muted-foreground)' 
+                : 'var(--foreground)'
+            }}
+          >
             {task.title}
           </h3>
         </div>
@@ -113,14 +143,16 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
       
       {/* Description and metadata */}
       <div>
-        <p className="text-neutral-400 text-sm mb-3 leading-relaxed">{task.description}</p>
-        <div className="flex items-center gap-4 text-xs text-neutral-400">
+        <p className="text-sm mb-3 leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
+          {task.description}
+        </p>
+        <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--muted-foreground)' }}>
           <span>Created {new Date(task.createdAt).toLocaleDateString()}</span>
           {task.status === 'completed' && (
-            <span className="text-green-400/60 font-medium">✓ Completed</span>
+            <span className="font-medium" style={{ color: '#22c55e' }}>✓ Completed</span>
           )}
           {task.status === 'pending' && (
-            <span className="text-amber-400/65 font-medium">Pending</span>
+            <span className="font-medium" style={{ color: '#eab308' }}>Pending</span>
           )}
         </div>
       </div>

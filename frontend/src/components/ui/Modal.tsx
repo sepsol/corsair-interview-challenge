@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
-import styles from './Modal.module.scss';
+import styles from '@/components/ui/Modal.module.scss';
 
 /**
  * Props for the Modal component
@@ -99,9 +99,10 @@ export default function Modal({
       <div className="flex min-h-full items-center justify-center p-4">
         <div 
           className={clsx(
-            'fixed inset-0 bg-black backdrop-blur-sm',
+            'fixed inset-0 backdrop-blur-sm',
             isClosing ? styles.backdropExit : styles.backdropEnter
           )}
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
           onClick={onClose}
           aria-hidden="true"
         />
@@ -109,7 +110,7 @@ export default function Modal({
         {/* Modal */}
         <div
           className={clsx(
-            'relative bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl w-full transform',
+            'relative border rounded-lg shadow-xl w-full transform',
             isClosing ? styles.modalExit : styles.modalEnter,
             {
               'max-w-sm': size === 'sm',
@@ -118,15 +119,36 @@ export default function Modal({
               'max-w-2xl': size === 'xl',
             }
           )}
+          style={{
+            backgroundColor: 'var(--card)',
+            borderColor: 'var(--border)',
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           {title && (
-            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-700">
-              <h2 className="text-lg font-semibold text-neutral-200">{title}</h2>
+            <div 
+              className="flex items-center justify-between px-6 py-4 border-b"
+              style={{ borderBottomColor: 'var(--border)' }}
+            >
+              <h2 
+                className="text-lg font-semibold" 
+                style={{ color: 'var(--foreground)' }}
+              >
+                {title}
+              </h2>
               <button
                 onClick={onClose}
-                className="text-neutral-400 hover:text-neutral-200 transition-colors p-1 rounded-md hover:bg-neutral-700 cursor-pointer"
+                className="p-1 rounded-md transition-colors cursor-pointer"
+                style={{ color: 'var(--muted-foreground)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = 'var(--foreground)';
+                  e.currentTarget.style.backgroundColor = 'var(--accent)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = 'var(--muted-foreground)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

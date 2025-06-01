@@ -48,29 +48,82 @@ export default function Button({
   className,
   ...props
 }: ButtonProps) {
+  const getButtonStyles = () => {
+    const baseStyle = {
+      transition: 'all 0.2s ease',
+    };
+
+    switch (variant) {
+      case 'primary':
+        return {
+          ...baseStyle,
+          backgroundColor: 'var(--primary)',
+          color: 'var(--primary-foreground)',
+          border: '1px solid var(--primary)',
+        };
+      case 'secondary':
+        return {
+          ...baseStyle,
+          backgroundColor: 'var(--secondary)',
+          color: 'var(--secondary-foreground)',
+          border: '1px solid var(--border)',
+        };
+      case 'danger':
+        return {
+          ...baseStyle,
+          backgroundColor: 'var(--destructive)',
+          color: 'var(--destructive-foreground)',
+          border: '1px solid var(--destructive)',
+        };
+      case 'danger-outline':
+        return {
+          ...baseStyle,
+          backgroundColor: 'transparent',
+          color: 'var(--destructive)',
+          border: '1px solid var(--destructive)',
+        };
+      default:
+        return baseStyle;
+    }
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (disabled || loading) return;
+    
+    switch (variant) {
+      case 'primary':
+        e.currentTarget.style.opacity = '0.8';
+        e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+        break;
+      case 'secondary':
+        e.currentTarget.style.backgroundColor = 'var(--accent)';
+        e.currentTarget.style.borderColor = 'var(--accent)';
+        break;
+      case 'danger':
+        e.currentTarget.style.opacity = '0.9';
+        break;
+      case 'danger-outline':
+        e.currentTarget.style.backgroundColor = 'var(--destructive)';
+        e.currentTarget.style.color = 'var(--destructive-foreground)';
+        e.currentTarget.style.borderColor = 'var(--destructive)';
+        break;
+    }
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (disabled || loading) return;
+    
+    const styles = getButtonStyles();
+    Object.assign(e.currentTarget.style, styles);
+    e.currentTarget.style.opacity = '';
+    e.currentTarget.style.boxShadow = '';
+  };
+
   return (
     <button
       className={clsx(
         // Base styles
-        'inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black',
-        // Variant styles (with conditional hover effects)
-        {
-          // Primary variant
-          'bg-neutral-200 text-neutral-900 focus:ring-neutral-400': variant === 'primary',
-          'hover:bg-neutral-400': variant === 'primary' && !disabled && !loading,
-          
-          // Secondary variant
-          'bg-neutral-700 text-neutral-200 border border-neutral-700 focus:ring-neutral-400': variant === 'secondary',
-          'hover:bg-neutral-900 hover:border-neutral-400': variant === 'secondary' && !disabled && !loading,
-          
-          // Danger variant
-          'bg-red-600 text-white focus:ring-red-500': variant === 'danger',
-          'hover:bg-red-700': variant === 'danger' && !disabled && !loading,
-          
-          // Danger outline variant (GitHub-style)
-          'text-red-400 border border-red-400/30 bg-transparent focus:ring-red-500': variant === 'danger-outline',
-          'hover:bg-red-600 hover:text-white hover:border-red-600': variant === 'danger-outline' && !disabled && !loading,
-        },
+        'inline-flex items-center justify-center font-medium rounded-md focus:outline-none border',
         // Size styles
         {
           'px-3 py-1.5 text-sm': size === 'sm',
@@ -86,6 +139,9 @@ export default function Button({
         },
         className
       )}
+      style={getButtonStyles()}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       disabled={disabled || loading}
       {...props}
     >

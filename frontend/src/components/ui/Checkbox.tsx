@@ -69,39 +69,58 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
       <div
         onClick={handleClick}
         className={clsx(
-          'relative flex items-center justify-center border-2 rounded-md transition-all duration-200',
-          'focus-within:ring-2 focus-within:ring-neutral-400 focus-within:ring-offset-2 focus-within:ring-offset-black',
+          'relative flex items-center justify-center border-2 rounded-md transition-colors duration-200 box-border',
           // Size variants
           {
             'w-4 h-4': size === 'sm',
             'w-5 h-5': size === 'md',
             'w-6 h-6': size === 'lg',
           },
-          // State variants
+          // Cursor
           {
-            // Unchecked state
-            'border-neutral-400 bg-neutral-700 hover:border-neutral-400': !checked && !disabled,
-            // Checked state
-            'border-neutral-400 bg-white hover:bg-neutral-200': checked && !disabled,
-            // Disabled state
-            'border-neutral-400 bg-neutral-900 cursor-not-allowed opacity-50': disabled,
-            // Cursor
             'cursor-pointer': !disabled,
+            'cursor-not-allowed': disabled,
           },
           className
         )}
+        style={{
+          borderColor: 'var(--border)',
+          borderWidth: '2px',
+          backgroundColor: checked && !disabled 
+            ? 'var(--primary)' 
+            : 'var(--background)',
+          opacity: disabled ? 0.5 : 1,
+          minWidth: size === 'sm' ? '16px' : size === 'md' ? '20px' : '24px',
+          minHeight: size === 'sm' ? '16px' : size === 'md' ? '20px' : '24px',
+        }}
+        onMouseEnter={(e) => {
+          if (!disabled) {
+            e.currentTarget.style.borderColor = 'var(--ring)';
+            if (!checked) {
+              e.currentTarget.style.backgroundColor = 'var(--accent)';
+            }
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!disabled) {
+            e.currentTarget.style.borderColor = 'var(--border)';
+            if (!checked) {
+              e.currentTarget.style.backgroundColor = 'var(--background)';
+            } else {
+              e.currentTarget.style.backgroundColor = 'var(--primary)';
+            }
+          }
+        }}
       >
         {/* Checkmark icon */}
         {checked && (
           <svg
-            className={clsx(
-              'text-neutral-700',
-              {
-                'w-2.5 h-2.5': size === 'sm',
-                'w-3 h-3': size === 'md',
-                'w-3.5 h-3.5': size === 'lg',
-              }
-            )}
+            className={clsx({
+              'w-2.5 h-2.5': size === 'sm',
+              'w-3 h-3': size === 'md',
+              'w-3.5 h-3.5': size === 'lg',
+            })}
+            style={{ color: 'var(--primary-foreground)' }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

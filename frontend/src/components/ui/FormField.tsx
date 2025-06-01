@@ -48,11 +48,14 @@ export default function FormField({
 }: FormFieldProps) {
   return (
     <div>
-      <label className={`block text-sm font-medium mb-2 ${
-        disabled ? 'text-neutral-400' : 'text-neutral-200'
-      }`}>
+      <label 
+        className="block text-sm font-medium mb-2"
+        style={{ 
+          color: disabled ? 'var(--muted-foreground)' : 'var(--foreground)' 
+        }}
+      >
         {label}
-        {required && <span className="text-red-400 ml-1">*</span>}
+        {required && <span className="ml-1" style={{ color: 'var(--destructive)' }}>*</span>}
       </label>
       
       <div className={error ? 'mb-1' : ''}>
@@ -63,7 +66,7 @@ export default function FormField({
       </div>
       
       {error && (
-        <p className="text-red-400 text-xs mt-1">{error}</p>
+        <p className="text-xs mt-1" style={{ color: 'var(--destructive)' }}>{error}</p>
       )}
     </div>
   );

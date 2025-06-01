@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthForm, { AuthFormData } from "@/components/AuthForm";
+import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
 
 /**
  * Login page component with centered form
@@ -53,7 +54,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 relative" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="absolute top-6 right-6">
+        <ThemeSwitcher />
+      </div>
       <AuthForm
         mode="login"
         onSubmit={handleLogin}

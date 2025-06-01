@@ -36,15 +36,15 @@ interface PageLayoutProps {
  */
 export default function PageLayout({ title, description, children, headerAction, userSection }: PageLayoutProps) {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
       {/* Header */}
-      <div className="bg-neutral-900 border-b border-neutral-700">
+      <div style={{ backgroundColor: 'var(--card)', borderBottomColor: 'var(--border)' }} className="border-b">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-neutral-200">{title}</h1>
+              <h1 className="text-2xl font-semibold" style={{ color: 'var(--foreground)' }}>{title}</h1>
               {description && (
-                <p className="text-neutral-400 mt-1">{description}</p>
+                <p className="mt-1" style={{ color: 'var(--muted-foreground)' }}>{description}</p>
               )}
             </div>
             <div className="flex items-center gap-4">

@@ -1,5 +1,5 @@
-import Modal from './Modal';
-import Button from './Button';
+import Modal from '@/components/ui/Modal';
+import Button from '@/components/ui/Button';
 
 /**
  * Props for the ConfirmationModal component
@@ -72,7 +72,7 @@ export default function ConfirmationModal({
     >
       <div className="space-y-4">
         {/* Message */}
-        <p className="text-neutral-200 text-sm leading-relaxed">
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--foreground)' }}>
           {message}
         </p>
 

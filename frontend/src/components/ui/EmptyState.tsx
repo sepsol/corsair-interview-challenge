@@ -40,8 +40,8 @@ export default function EmptyState({
   return (
     <div className="text-center py-16">
       <div className="text-6xl mb-4">{icon}</div>
-      <h3 className="text-lg font-medium text-neutral-100 mb-2">{title}</h3>
-      <p className="text-neutral-400 mb-6">{description}</p>
+      <h3 className="text-lg font-medium mb-2" style={{ color: 'var(--foreground)' }}>{title}</h3>
+      <p className="mb-6" style={{ color: 'var(--muted-foreground)' }}>{description}</p>
     </div>
   );
 }
