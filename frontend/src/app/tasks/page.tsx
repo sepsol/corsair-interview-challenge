@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
-import { Task } from "@task-manager/shared";
+import { Task, User } from "@task-manager/shared";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLayout from "@/components/ui/PageLayout";
 import TaskCard from "@/components/TaskCard";
@@ -37,8 +38,20 @@ export default function TasksPage() {
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [toggleLoadingTasks, setToggleLoadingTasks] = useState<Set<string>>(new Set());
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
+    // Load user from localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error('Error parsing stored user:', err);
+      }
+    }
+
     const fetchTasks = async () => {
       try {
         setIsLoading(true);
@@ -59,6 +72,20 @@ export default function TasksPage() {
 
     fetchTasks();
   }, []);
+
+  const handleLogout = () => {
+    // Clear authentication data
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user');
+    
+    // Clear user state
+    setUser(null);
+    
+    console.log('User logged out');
+    
+    // Redirect to login page
+    router.push('/login');
+  };
 
   const handleOpenCreateModal = () => {
     setIsCreateModalOpen(true);
@@ -218,10 +245,38 @@ export default function TasksPage() {
     <PageLayout 
       title="Tasks" 
       description="Manage your tasks efficiently"
-      headerAction={
-        <Button onClick={handleOpenCreateModal}>
-          + Add Task
-        </Button>
+      userSection={
+        <div className="flex items-center gap-3">
+          {user && (
+            <div className="text-right">
+              <p className="text-sm text-neutral-300">Welcome back,</p>
+              <p className="text-sm font-medium text-neutral-100">{user.username}</p>
+            </div>
+          )}
+          <Button 
+            variant="secondary" 
+            size="md" 
+            onClick={handleLogout}
+          >
+            <svg 
+              className="w-4 h-4 mr-2" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+              />
+            </svg>
+            Logout
+          </Button>
+          <Button onClick={handleOpenCreateModal}>
+            + Add Task
+          </Button>
+        </div>
       }
     >
       {isLoading && (

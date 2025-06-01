@@ -12,6 +12,8 @@ interface PageLayoutProps {
   children: ReactNode;
   /** Optional action button to display in the header */
   headerAction?: ReactNode;
+  /** Optional user info and logout section to display in the header */
+  userSection?: ReactNode;
 }
 
 /**
@@ -32,7 +34,7 @@ interface PageLayoutProps {
  * </PageLayout>
  * ```
  */
-export default function PageLayout({ title, description, children, headerAction }: PageLayoutProps) {
+export default function PageLayout({ title, description, children, headerAction, userSection }: PageLayoutProps) {
   return (
     <div className="min-h-screen bg-black">
       {/* Header */}
@@ -45,11 +47,18 @@ export default function PageLayout({ title, description, children, headerAction 
                 <p className="text-neutral-500 mt-1">{description}</p>
               )}
             </div>
-            {headerAction && (
-              <div className="flex-shrink-0">
-                {headerAction}
-              </div>
-            )}
+            <div className="flex items-center gap-4">
+              {headerAction && (
+                <div className="flex-shrink-0">
+                  {headerAction}
+                </div>
+              )}
+              {userSection && (
+                <div className="flex-shrink-0">
+                  {userSection}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
