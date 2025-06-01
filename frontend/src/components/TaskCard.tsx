@@ -78,32 +78,12 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
       {/* Title row with checkbox and action buttons */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3 flex-1 mr-3">
-          <div className="relative">
-            <Checkbox
-              checked={task.status === 'completed'}
-              size="lg"
-              onChange={handleCheckboxToggle}
-              disabled={isToggleLoading}
-            />
-            {isToggleLoading && (
-              <div 
-                className="absolute pointer-events-none"
-                style={{
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)'
-                }}
-              >
-                <div 
-                  className="w-3 h-3 border-2 rounded-full animate-spin"
-                  style={{ 
-                    borderColor: 'var(--muted-foreground)',
-                    borderTopColor: 'transparent'
-                  }}
-                ></div>
-              </div>
-            )}
-          </div>
+          <Checkbox
+            checked={task.status === 'completed'}
+            size="lg"
+            loading={isToggleLoading}
+            onChange={handleCheckboxToggle}
+          />
           <h3 
             className={`font-medium ${task.status === 'completed' ? 'line-through' : ''}`}
             style={{ 
