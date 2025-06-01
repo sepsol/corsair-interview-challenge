@@ -131,3 +131,6 @@ public
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Storage files (keep directory but ignore data files)
+src/data/storage/*.json

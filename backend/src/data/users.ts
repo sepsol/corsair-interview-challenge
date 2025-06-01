@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { User } from '@task-manager/shared';
+import { readJSONFile, writeJSONFile, getStoragePath } from '@/utils/fileStorage';
 
 // Internal user interface with password field for backend storage
 export interface UserWithPassword extends User {
@@ -7,51 +8,54 @@ export interface UserWithPassword extends User {
 }
 
 /**
- * In-memory user storage array
+ * File path for users storage
  */
-const users: UserWithPassword[] = [];
+const USERS_FILE = getStoragePath('users.json');
 
 /**
- * Initialize the user storage with a default admin user
+ * Default users data with hashed password for 'password123'
  */
-const initializeDefaultUser = async () => {
-  if (users.length === 0) {
-    const hashedPassword = await bcrypt.hash('password123', 10);
-    users.push({
-      id: '1',
-      username: 'defaultuser',
-      password: hashedPassword,
-      createdAt: new Date().toISOString()
-    });
+const DEFAULT_USERS: UserWithPassword[] = [
+  {
+    id: '1',
+    username: 'defaultuser',
+    password: '$2b$10$QnyG3udMiuNNz.mn99YSY.7KTsAfoaEn8.Y2Ku3tNfxMep180DRpi', // password123
+    createdAt: new Date().toISOString()
   }
+];
+
+/**
+ * Get all users from file storage
+ * @returns Promise resolving to array of all users with passwords
+ */
+export const getAllUsers = async (): Promise<UserWithPassword[]> => {
+  return await readJSONFile(USERS_FILE, DEFAULT_USERS);
 };
 
-// Initialize default user on module load
-initializeDefaultUser();
-
 /**
- * Get all users from memory storage
- * @returns Array of all users with passwords
+ * Write all users to file
  */
-export const getAllUsers = (): UserWithPassword[] => {
-  return users;
+export const saveUsers = async (users: UserWithPassword[]): Promise<void> => {
+  await writeJSONFile(USERS_FILE, users);
 };
 
 /**
  * Find a user by their ID
  * @param id - The user ID to search for
- * @returns User with password if found, undefined otherwise
+ * @returns Promise resolving to user with password if found, undefined otherwise
  */
-export const getUserById = (id: string): UserWithPassword | undefined => {
+export const getUserById = async (id: string): Promise<UserWithPassword | undefined> => {
+  const users = await getAllUsers();
   return users.find(user => user.id === id);
 };
 
 /**
  * Find a user by their username
  * @param username - The username to search for
- * @returns User with password if found, undefined otherwise
+ * @returns Promise resolving to user with password if found, undefined otherwise
  */
-export const getUserByUsername = (username: string): UserWithPassword | undefined => {
+export const getUserByUsername = async (username: string): Promise<UserWithPassword | undefined> => {
+  const users = await getAllUsers();
   return users.find(user => user.username === username);
 };
 
@@ -62,7 +66,9 @@ export const getUserByUsername = (username: string): UserWithPassword | undefine
  * @returns Promise resolving to the created user with hashed password
  */
 export const createUser = async (username: string, password: string): Promise<UserWithPassword> => {
+  const users = await getAllUsers();
   const hashedPassword = await bcrypt.hash(password, 10);
+  
   const newUser: UserWithPassword = {
     id: Date.now().toString(),
     username,
@@ -71,6 +77,7 @@ export const createUser = async (username: string, password: string): Promise<Us
   };
   
   users.push(newUser);
+  await saveUsers(users);
   return newUser;
 };
 

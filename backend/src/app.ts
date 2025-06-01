@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import tasksRouter from '@/routes/tasks';
 import authRouter from '@/routes/auth';
 import { artificialDelay } from '@/middleware/delay';
+import { initializeStorage } from '@/utils/initializeStorage';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -35,9 +36,20 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
-});
+// Initialize storage and start server
+async function startServer() {
+  try {
+    await initializeStorage();
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 export default app;

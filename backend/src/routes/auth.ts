@@ -22,7 +22,7 @@ router.post('/login', async (req: Request<{}, unknown, LoginRequest>, res: Respo
       return;
     }
 
-    const user = getUserByUsername(username);
+    const user = await getUserByUsername(username);
     if (!user) {
       res.status(401).json({ 
         error: 'Invalid credentials' 
@@ -85,7 +85,7 @@ router.post('/register', async (req: Request<{}, unknown, RegisterRequest>, res:
       return;
     }
 
-    const existingUser = getUserByUsername(username);
+    const existingUser = await getUserByUsername(username);
     if (existingUser) {
       res.status(409).json({ 
         error: 'Username already exists' 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import { Router, Request, Response } from 'express';
-import { tasks, getNextTaskId } from '@/data/tasks';
+import { getTasksByUserId, addTask, updateTask, deleteTask, getNextTaskId } from '@/data/tasks';
 import { CreateTaskRequest, Task, UpdateTaskRequest } from '@task-manager/shared';
 import { ErrorResponse } from '@/types/api';
 import { authenticateToken } from '@/middleware/auth';
@@ -14,7 +14,7 @@ router.use(authenticateToken);
  * GET /api/tasks
  * Retrieve all tasks for the authenticated user
  */
-router.get('/', (req: Request, res: Response<Task[] | ErrorResponse>) => {
+router.get('/', async (req: Request, res: Response<Task[] | ErrorResponse>) => {
   try {
     const userId = req.user?.id;
     
@@ -23,8 +23,8 @@ router.get('/', (req: Request, res: Response<Task[] | ErrorResponse>) => {
       return;
     }
     
-    // Filter tasks by user ID
-    const userTasks = tasks.filter(task => task.userId === userId);
+    // Get tasks by user ID from file storage
+    const userTasks = await getTasksByUserId(userId);
     res.json(userTasks);
   } catch (error: unknown) {
     console.error('Error retrieving tasks:', error);
@@ -36,7 +36,7 @@ router.get('/', (req: Request, res: Response<Task[] | ErrorResponse>) => {
  * POST /api/tasks
  * Create a new task for the authenticated user
  */
-router.post('/', (req: Request<{}, unknown, CreateTaskRequest>, res: Response<Task | ErrorResponse>) => {
+router.post('/', async (req: Request<{}, unknown, CreateTaskRequest>, res: Response<Task | ErrorResponse>) => {
   try {
     const { title, description = '', status = 'pending' } = req.body;
     const userId = req.user?.id;
@@ -58,7 +58,7 @@ router.post('/', (req: Request<{}, unknown, CreateTaskRequest>, res: Response<Ta
     // Create new task associated with the user
     const now = new Date().toISOString();
     const newTask: Task = {
-      id: getNextTaskId(),
+      id: await getNextTaskId(),
       userId,
       title,
       description,
@@ -67,9 +67,9 @@ router.post('/', (req: Request<{}, unknown, CreateTaskRequest>, res: Response<Ta
       updatedAt: now,
     };
 
-    tasks.push(newTask);
+    const savedTask = await addTask(newTask);
     
-    res.status(201).json(newTask);
+    res.status(201).json(savedTask);
   } catch (error: unknown) {
     console.error('Error creating task:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -80,7 +80,7 @@ router.post('/', (req: Request<{}, unknown, CreateTaskRequest>, res: Response<Ta
  * PUT /api/tasks/:id
  * Update an existing task (only if owned by authenticated user)
  */
-router.put('/:id', (req: Request<{ id: string }, unknown, UpdateTaskRequest>, res: Response<Task | ErrorResponse>) => {
+router.put('/:id', async (req: Request<{ id: string }, unknown, UpdateTaskRequest>, res: Response<Task | ErrorResponse>) => {
   try {
     const { id } = req.params;
     const { title, description, status } = req.body;
@@ -92,25 +92,27 @@ router.put('/:id', (req: Request<{ id: string }, unknown, UpdateTaskRequest>, re
       return;
     }
 
-    // Find task by ID and ensure it belongs to the user
-    const taskIndex = tasks.findIndex(task => task.id === id && task.userId === userId);
+    // Get user's tasks to verify ownership
+    const userTasks = await getTasksByUserId(userId);
+    const existingTask = userTasks.find(task => task.id === id);
     
-    if (taskIndex === -1) {
+    if (!existingTask) {
       res.status(404).json({ error: 'Task not found' });
       return;
     }
 
     // Update task with provided fields
-    const existingTask = tasks[taskIndex];
-    const updatedTask: Task = {
-      ...existingTask,
-      ...(title !== undefined && { title }),
-      ...(description !== undefined && { description }),
-      ...(status !== undefined && { status }),
-      updatedAt: new Date().toISOString(),
-    };
+    const updates: Partial<Task> = {};
+    if (title !== undefined) updates.title = title;
+    if (description !== undefined) updates.description = description;
+    if (status !== undefined) updates.status = status;
 
-    tasks[taskIndex] = updatedTask;
+    const updatedTask = await updateTask(id, updates);
+    
+    if (!updatedTask) {
+      res.status(404).json({ error: 'Task not found' });
+      return;
+    }
     
     res.json(updatedTask);
   } catch (error: unknown) {
@@ -123,7 +125,7 @@ router.put('/:id', (req: Request<{ id: string }, unknown, UpdateTaskRequest>, re
  * DELETE /api/tasks/:id
  * Delete a task (only if owned by authenticated user)
  */
-router.delete('/:id', (req: Request<{ id: string }>, res: Response<Task | ErrorResponse>) => {
+router.delete('/:id', async (req: Request<{ id: string }>, res: Response<Task | ErrorResponse>) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -134,19 +136,22 @@ router.delete('/:id', (req: Request<{ id: string }>, res: Response<Task | ErrorR
       return;
     }
 
-    // Find task by ID and ensure it belongs to the user
-    const taskIndex = tasks.findIndex(task => task.id === id && task.userId === userId);
+    // Get user's tasks to verify ownership
+    const userTasks = await getTasksByUserId(userId);
+    const existingTask = userTasks.find(task => task.id === id);
     
-    if (taskIndex === -1) {
+    if (!existingTask) {
       res.status(404).json({ error: 'Task not found' });
       return;
     }
 
-    // Get the task before removing it
-    const deletedTask = tasks[taskIndex];
+    // Delete the task
+    const deletedTask = await deleteTask(id);
     
-    // Remove task from array
-    tasks.splice(taskIndex, 1);
+    if (!deletedTask) {
+      res.status(404).json({ error: 'Task not found' });
+      return;
+    }
     
     res.status(200).json(deletedTask);
   } catch (error: unknown) {

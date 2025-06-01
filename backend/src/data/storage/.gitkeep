@@ -1,0 +1,2 @@
+# This file keeps the storage directory in git while ignoring data files
+# The storage directory is needed for JSON file persistence (Challenge 3)
