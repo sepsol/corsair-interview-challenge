@@ -248,8 +248,8 @@ function TasksPageContent() {
           {user && (
             <>
               <div className="text-right">
-                <p className="text-sm text-neutral-500">Welcome back,</p>
-                <p className="text-sm font-medium text-neutral-200">{user.username}</p>
+                <p className="text-sm text-neutral-400">Welcome back,</p>
+                <p className="text-sm font-medium text-neutral-300">{user.username}</p>
               </div>
               <Button 
                 variant="secondary" 
