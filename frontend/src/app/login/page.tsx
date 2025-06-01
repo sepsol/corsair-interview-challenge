@@ -44,7 +44,9 @@ export default function LoginPage() {
       // Store user information (optional)
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
-      console.log("Login successful:", response.data.user);
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Login successful:", response.data.user);
+      }
       
       // Redirect to tasks page
       router.push('/tasks');
@@ -60,7 +62,9 @@ export default function LoginPage() {
       }
       
       setError(errorMessage);
-      console.error("Login error:", errorMessage);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Login error:", errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }

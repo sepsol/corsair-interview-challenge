@@ -45,7 +45,9 @@ export default function RegisterPage() {
       // Store user information
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
-      console.log("Registration successful:", response.data.user);
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Registration successful:", response.data.user);
+      }
       
       // Redirect to tasks page
       router.push('/tasks');
@@ -61,7 +63,9 @@ export default function RegisterPage() {
       }
       
       setError(errorMessage);
-      console.error("Registration error:", errorMessage);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Registration error:", errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
