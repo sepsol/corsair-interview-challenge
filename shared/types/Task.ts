@@ -4,6 +4,8 @@
 export interface Task {
   /** Unique identifier for the task */
   id: string;
+  /** ID of the user who owns this task */
+  userId: string;
   /** Task title */
   title: string;
   /** Detailed description of the task */

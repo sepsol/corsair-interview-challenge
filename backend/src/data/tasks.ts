@@ -6,6 +6,7 @@ import { Task } from '@task-manager/shared';
 export const tasks: Task[] = [
   {
     id: '1',
+    userId: '1', // Associated with default user
     title: 'Sample Task',
     description: 'This is a sample task to get started',
     status: 'pending',

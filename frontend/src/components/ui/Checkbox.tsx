@@ -4,7 +4,7 @@ import clsx from 'clsx';
 /**
  * Props for the Checkbox component
  */
-interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
   /** Whether the checkbox is checked */
   checked?: boolean;
   /** Size of the checkbox */

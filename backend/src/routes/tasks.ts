@@ -12,11 +12,20 @@ router.use(authenticateToken);
 
 /**
  * GET /api/tasks
- * Retrieve all tasks
+ * Retrieve all tasks for the authenticated user
  */
 router.get('/', (req: Request, res: Response<Task[] | ErrorResponse>) => {
   try {
-    res.json(tasks);
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      res.status(401).json({ error: 'User not authenticated' });
+      return;
+    }
+    
+    // Filter tasks by user ID
+    const userTasks = tasks.filter(task => task.userId === userId);
+    res.json(userTasks);
   } catch (error: unknown) {
     console.error('Error retrieving tasks:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -25,11 +34,18 @@ router.get('/', (req: Request, res: Response<Task[] | ErrorResponse>) => {
 
 /**
  * POST /api/tasks
- * Create a new task
+ * Create a new task for the authenticated user
  */
 router.post('/', (req: Request<{}, unknown, CreateTaskRequest>, res: Response<Task | ErrorResponse>) => {
   try {
     const { title, description = '', status = 'pending' } = req.body;
+    const userId = req.user?.id;
+
+    // Check authentication
+    if (!userId) {
+      res.status(401).json({ error: 'User not authenticated' });
+      return;
+    }
 
     // Basic validation
     if (!title) {
@@ -39,10 +55,11 @@ router.post('/', (req: Request<{}, unknown, CreateTaskRequest>, res: Response<Ta
       return;
     }
 
-    // Create new task
+    // Create new task associated with the user
     const now = new Date().toISOString();
     const newTask: Task = {
       id: getNextTaskId(),
+      userId,
       title,
       description,
       status,
@@ -61,15 +78,22 @@ router.post('/', (req: Request<{}, unknown, CreateTaskRequest>, res: Response<Ta
 
 /**
  * PUT /api/tasks/:id
- * Update an existing task
+ * Update an existing task (only if owned by authenticated user)
  */
 router.put('/:id', (req: Request<{ id: string }, unknown, UpdateTaskRequest>, res: Response<Task | ErrorResponse>) => {
   try {
     const { id } = req.params;
     const { title, description, status } = req.body;
+    const userId = req.user?.id;
 
-    // Find task by ID
-    const taskIndex = tasks.findIndex(task => task.id === id);
+    // Check authentication
+    if (!userId) {
+      res.status(401).json({ error: 'User not authenticated' });
+      return;
+    }
+
+    // Find task by ID and ensure it belongs to the user
+    const taskIndex = tasks.findIndex(task => task.id === id && task.userId === userId);
     
     if (taskIndex === -1) {
       res.status(404).json({ error: 'Task not found' });
@@ -97,14 +121,21 @@ router.put('/:id', (req: Request<{ id: string }, unknown, UpdateTaskRequest>, re
 
 /**
  * DELETE /api/tasks/:id
- * Delete a task
+ * Delete a task (only if owned by authenticated user)
  */
 router.delete('/:id', (req: Request<{ id: string }>, res: Response<Task | ErrorResponse>) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
 
-    // Find task by ID
-    const taskIndex = tasks.findIndex(task => task.id === id);
+    // Check authentication
+    if (!userId) {
+      res.status(401).json({ error: 'User not authenticated' });
+      return;
+    }
+
+    // Find task by ID and ensure it belongs to the user
+    const taskIndex = tasks.findIndex(task => task.id === id && task.userId === userId);
     
     if (taskIndex === -1) {
       res.status(404).json({ error: 'Task not found' });

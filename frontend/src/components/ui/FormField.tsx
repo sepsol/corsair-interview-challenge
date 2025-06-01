@@ -57,7 +57,7 @@ export default function FormField({
       
       <div className={error ? 'mb-1' : ''}>
         {isValidElement(children) 
-          ? cloneElement(children, { error: Boolean(error) } as any)
+          ? cloneElement(children, { error: Boolean(error) } as { error: boolean })
           : children
         }
       </div>

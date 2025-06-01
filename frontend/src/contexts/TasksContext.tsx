@@ -1,10 +1,11 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Task } from '@task-manager/shared';
 import { TaskFormData } from '@/schemas/taskSchema';
+import { useAuth } from '@/contexts/AuthContext';
 import api from '@/services/api';
 
 interface TasksContextType {
@@ -18,6 +19,7 @@ interface TasksContextType {
   toggleTaskStatus: (task: Task) => Promise<void>;
   fetchTasks: () => Promise<void>;
   clearError: () => void;
+  clearTasks: () => void;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -31,13 +33,23 @@ export function TasksProvider({ children }: TasksProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [toggleLoadingTasks, setToggleLoadingTasks] = useState<Set<string>>(new Set());
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const { user, isAuthenticated } = useAuth();
   const router = useRouter();
 
   const clearError = () => {
     setError(null);
   };
+  
+  const clearTasks = useCallback(() => {
+    setTasks([]);
+    setError(null);
+    setToggleLoadingTasks(new Set());
+    setCurrentUserId(null);
+    setIsLoading(false);
+  }, []);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await api.get<Task[]>('/tasks');
@@ -65,7 +77,7 @@ export function TasksProvider({ children }: TasksProviderProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
   const createTask = async (formData: TaskFormData) => {
     const response = await api.post<Task>('/tasks', {
@@ -139,10 +151,35 @@ export function TasksProvider({ children }: TasksProviderProps) {
     }
   };
 
-  // Initial fetch on mount
+  // Clear tasks when user changes or logs out
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    const newUserId = user?.id || null;
+    
+    // If user changed or logged out, clear tasks
+    if (currentUserId !== newUserId) {
+      setTasks([]);
+      setError(null);
+      setCurrentUserId(newUserId);
+      
+      // If user is authenticated and different from previous, fetch their tasks
+      if (isAuthenticated && newUserId) {
+        fetchTasks();
+      } else {
+        // User logged out, stop loading state
+        setIsLoading(false);
+      }
+    }
+  }, [user?.id, isAuthenticated, currentUserId, fetchTasks]);
+  
+  // Initial fetch on mount if user is already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user?.id && !currentUserId) {
+      setCurrentUserId(user.id);
+      fetchTasks();
+    } else if (!isAuthenticated) {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, user?.id, currentUserId, fetchTasks]);
 
   const value = {
     tasks,
@@ -155,6 +192,7 @@ export function TasksProvider({ children }: TasksProviderProps) {
     toggleTaskStatus,
     fetchTasks,
     clearError,
+    clearTasks,
   };
 
   return (
