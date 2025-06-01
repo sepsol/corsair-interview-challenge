@@ -33,7 +33,9 @@ export default function Home() {
         // Invalid user data, clear it
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user');
-        console.error('Invalid stored user data:', err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Invalid stored user data:', err);
+        }
       }
     }
     

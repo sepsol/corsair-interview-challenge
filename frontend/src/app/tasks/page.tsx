@@ -59,7 +59,9 @@ function TasksPageContent({ user }: TasksPageContentProps) {
         if (axios.isAxiosError(err)) {
           // Check if it's an authentication error
           if (err.response?.status === 401 || err.response?.status === 403) {
-            console.log('Authentication expired, redirecting to root');
+            if (process.env.NODE_ENV === 'development') {
+              console.log('Authentication expired, redirecting to root');
+            }
             localStorage.removeItem('auth_token');
             localStorage.removeItem('user');
             router.push('/');
@@ -88,7 +90,9 @@ function TasksPageContent({ user }: TasksPageContentProps) {
     // Clear user state
     setUser(null);
     
-    console.log('User logged out');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('User logged out');
+    }
     
     // Redirect to root page (which will redirect to login)
     router.push('/');
@@ -199,7 +203,9 @@ function TasksPageContent({ user }: TasksPageContentProps) {
       
       // Set error state for user feedback
       setError(errorMessage);
-      console.error('Delete error:', errorMessage);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Delete error:', errorMessage);
+      }
       
       // Clear error after 5 seconds
       setTimeout(() => setError(null), 5000);
@@ -234,7 +240,9 @@ function TasksPageContent({ user }: TasksPageContentProps) {
       
       // Set error state (you could implement a toast/notification system here)
       setError(errorMessage);
-      console.error('Status toggle error:', errorMessage);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Status toggle error:', errorMessage);
+      }
       
       // Clear error after 5 seconds
       setTimeout(() => setError(null), 5000);

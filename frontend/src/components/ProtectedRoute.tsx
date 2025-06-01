@@ -48,7 +48,9 @@ export default function ProtectedRoute({ children, onUserLoaded }: ProtectedRout
         const storedUser = localStorage.getItem('user');
         
         if (!token || !storedUser) {
-          console.log('No authentication found, redirecting to root');
+          if (process.env.NODE_ENV === 'development') {
+            console.log('No authentication found, redirecting to root');
+          }
           router.push('/');
           return;
         }
@@ -58,7 +60,9 @@ export default function ProtectedRoute({ children, onUserLoaded }: ProtectedRout
         try {
           userData = JSON.parse(storedUser);
         } catch (parseError) {
-          console.error('Invalid stored user data:', parseError);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Invalid stored user data:', parseError);
+          }
           // Clear corrupted data and redirect
           localStorage.removeItem('auth_token');
           localStorage.removeItem('user');
@@ -74,10 +78,14 @@ export default function ProtectedRoute({ children, onUserLoaded }: ProtectedRout
           onUserLoaded(userData);
         }
         
-        console.log('Authentication verified for user:', userData.username);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Authentication verified for user:', userData.username);
+        }
         
       } catch (error) {
-        console.error('Authentication check failed:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Authentication check failed:', error);
+        }
         // Clear any potentially corrupted data
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user');
