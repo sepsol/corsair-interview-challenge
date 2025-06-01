@@ -14,6 +14,15 @@ import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import TaskForm from "@/components/TaskForm";
 import { TaskFormData } from "@/schemas/taskSchema";
 import api from "@/services/api";
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+/**
+ * Props for the TasksPageContent component
+ */
+interface TasksPageContentProps {
+  /** The authenticated user */
+  user: User;
+}
 
 /**
  * Main tasks page component that displays a list of tasks
@@ -27,7 +36,7 @@ import api from "@/services/api";
  * 
  * @returns The complete tasks page with header and task list
  */
-export default function TasksPage() {
+function TasksPageContent({ user }: TasksPageContentProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,20 +47,9 @@ export default function TasksPage() {
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [toggleLoadingTasks, setToggleLoadingTasks] = useState<Set<string>>(new Set());
-  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Load user from localStorage
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error('Error parsing stored user:', err);
-      }
-    }
-
     const fetchTasks = async () => {
       try {
         setIsLoading(true);
@@ -59,7 +57,16 @@ export default function TasksPage() {
         setTasks(response.data);
       } catch (err) {
         if (axios.isAxiosError(err)) {
-          // Handle Axios-specific errors
+          // Check if it's an authentication error
+          if (err.response?.status === 401 || err.response?.status === 403) {
+            console.log('Authentication expired, redirecting to root');
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push('/');
+            return;
+          }
+          
+          // Handle other API errors
           const message = err.response?.data?.error || err.message || 'Failed to fetch tasks';
           setError(message);
         } else {
@@ -71,7 +78,7 @@ export default function TasksPage() {
     };
 
     fetchTasks();
-  }, []);
+  }, [router]);
 
   const handleLogout = () => {
     // Clear authentication data
@@ -361,5 +368,19 @@ export default function TasksPage() {
         isLoading={isDeleting}
       />
     </PageLayout>
+  );
+}
+
+/**
+ * Protected wrapper for the tasks page
+ * Handles authentication before rendering the page content
+ */
+export default function TasksPage() {
+  const [user, setUser] = useState<User | null>(null);
+
+  return (
+    <ProtectedRoute onUserLoaded={setUser}>
+      {user && <TasksPageContent user={user} />}
+    </ProtectedRoute>
   );
 }
