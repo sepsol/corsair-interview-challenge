@@ -87,9 +87,6 @@ function TasksPageContent({ user }: TasksPageContentProps) {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     
-    // Clear user state
-    setUser(null);
-    
     if (process.env.NODE_ENV === 'development') {
       console.log('User logged out');
     }
@@ -265,8 +262,8 @@ function TasksPageContent({ user }: TasksPageContentProps) {
           {user && (
             <>
               <div className="text-right">
-                <p className="text-sm text-neutral-300">Welcome back,</p>
-                <p className="text-sm font-medium text-neutral-100">{user.username}</p>
+                <p className="text-sm text-neutral-500">Welcome back,</p>
+                <p className="text-sm font-medium text-neutral-200">{user.username}</p>
               </div>
               <Button 
                 variant="secondary" 
