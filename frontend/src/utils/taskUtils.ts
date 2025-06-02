@@ -22,7 +22,7 @@ export function getStatusDisplay(status: 'pending' | 'completed') {
       return {
         text: 'Pending',
         color: '#eab308',
-        icon: '⏳',
+        icon: '',
         className: 'pending'
       };
     default:
