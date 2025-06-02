@@ -190,14 +190,14 @@ function TasksPageContent() {
             <>
               <div className="flex flex-col sm:flex-row gap-4 mb-6 sm:items-center sm:justify-between">
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--foreground)' }}>
                       Filter:
                     </label>
                     <select
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value as 'all' | 'pending' | 'completed')}
-                      className="px-3 py-2 text-sm border rounded-md"
+                      className="px-3 py-2 text-sm border rounded-md w-full sm:w-auto"
                       style={{
                         borderColor: 'var(--border)',
                         backgroundColor: 'var(--background)',
@@ -210,14 +210,14 @@ function TasksPageContent() {
                     </select>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--foreground)' }}>
                       Sort by Date:
                     </label>
                     <select
                       value={sortOrder}
                       onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-                      className="px-3 py-2 text-sm border rounded-md"
+                      className="px-3 py-2 text-sm border rounded-md w-full sm:w-auto"
                       style={{
                         borderColor: 'var(--border)',
                         backgroundColor: 'var(--background)',
