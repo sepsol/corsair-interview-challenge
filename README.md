@@ -8,6 +8,15 @@ A full-stack Task Manager application built with Next.js 15 (frontend) and Node.
 
 For the full specification please see [here](./SPECIFICATION.md).
 
+### Quick Start
+The easiest way to get started is with Docker Compose:
+
+```sh
+docker compose up
+```
+
+This will start both the frontend (http://localhost:3000) and backend (http://localhost:4000) with hot reload enabled. See the [Development](#development) section below for more details and alternative setup options.
+
 ### Features
 - **User Authentication**: JWT-based authentication with bcrypt password hashing
 - **Task Management**: Full CRUD operations for tasks with validation
