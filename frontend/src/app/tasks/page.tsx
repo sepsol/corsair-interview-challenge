@@ -117,11 +117,70 @@ function TasksPageContent() {
       description="Manage your tasks efficiently"
       userSection={<UserNavbar />}
     >
+      {/* Top bar - always visible */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 sm:items-center sm:justify-between">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--foreground)' }}>
+              Filter:
+            </label>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as 'all' | 'pending' | 'completed')}
+              disabled={isLoading}
+              className="px-3 py-2 text-sm border rounded-md w-full sm:w-auto"
+              style={{
+                borderColor: 'var(--border)',
+                backgroundColor: 'var(--background)',
+                color: 'var(--foreground)',
+                opacity: isLoading ? 0.5 : 1,
+                cursor: isLoading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <option value="all">All Tasks</option>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--foreground)' }}>
+              Sort by Date:
+            </label>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+              disabled={isLoading}
+              className="px-3 py-2 text-sm border rounded-md w-full sm:w-auto"
+              style={{
+                borderColor: 'var(--border)',
+                backgroundColor: 'var(--background)',
+                color: 'var(--foreground)',
+                opacity: isLoading ? 0.5 : 1,
+                cursor: isLoading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <option value="desc">Newest First</option>
+              <option value="asc">Oldest First</option>
+            </select>
+          </div>
+        </div>
+
+        <Button 
+          onClick={handleOpenCreateModal}
+          disabled={isLoading}
+        >
+          + Add Task
+        </Button>
+      </div>
+
+      {/* Loading state */}
       {isLoading && (
         <LoadingSpinner message="Loading tasks..." />
       )}
       
-      {error && (
+      {/* Error state */}
+      {error && !isLoading && (
         <div className="flex items-center justify-center py-16">
           <div className="text-center">
             <div className="text-4xl mb-4" style={{ color: 'var(--destructive)' }}>⚠️</div>
@@ -131,6 +190,7 @@ function TasksPageContent() {
         </div>
       )}
 
+      {/* Tasks content */}
       {!isLoading && !error && (
         <>
           {tasks.length === 0 ? (
@@ -140,53 +200,6 @@ function TasksPageContent() {
             />
           ) : (
             <>
-              <div className="flex flex-col sm:flex-row gap-4 mb-6 sm:items-center sm:justify-between">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--foreground)' }}>
-                      Filter:
-                    </label>
-                    <select
-                      value={filterStatus}
-                      onChange={(e) => setFilterStatus(e.target.value as 'all' | 'pending' | 'completed')}
-                      className="px-3 py-2 text-sm border rounded-md w-full sm:w-auto"
-                      style={{
-                        borderColor: 'var(--border)',
-                        backgroundColor: 'var(--background)',
-                        color: 'var(--foreground)'
-                      }}
-                    >
-                      <option value="all">All Tasks</option>
-                      <option value="pending">Pending</option>
-                      <option value="completed">Completed</option>
-                    </select>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--foreground)' }}>
-                      Sort by Date:
-                    </label>
-                    <select
-                      value={sortOrder}
-                      onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-                      className="px-3 py-2 text-sm border rounded-md w-full sm:w-auto"
-                      style={{
-                        borderColor: 'var(--border)',
-                        backgroundColor: 'var(--background)',
-                        color: 'var(--foreground)'
-                      }}
-                    >
-                      <option value="desc">Newest First</option>
-                      <option value="asc">Oldest First</option>
-                    </select>
-                  </div>
-                </div>
-
-                <Button onClick={handleOpenCreateModal}>
-                  + Add Task
-                </Button>
-              </div>
-
               {filteredAndSortedTasks.length === 0 ? (
                 <EmptyState 
                   title="No matching tasks" 
