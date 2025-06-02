@@ -9,7 +9,7 @@
     "start": "NODE_ENV=production node dist/app.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "storage:clear": "rm -f src/data/storage/*.json && echo 'Storage cleared. Default data will be recreated on next server start.'"
+    "clean:storage": "npx rimraf src/data/storage/*.json"
   },
   "dependencies": {
     "@task-manager/shared": "file:../shared",
