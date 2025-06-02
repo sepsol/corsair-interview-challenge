@@ -8,7 +8,7 @@ import { UserWithPassword } from '@/data/users';
  * Initialize storage with default data if files are empty or missing
  */
 export async function initializeStorage(): Promise<void> {
-  console.log('🔧 Initializing storage...');
+  console.log('Initializing storage...');
   
   try {
     // Initialize users if empty
@@ -32,7 +32,7 @@ async function initializeUsers(): Promise<void> {
     const users = await getAllUsers();
     
     if (users.length === 0) {
-      console.log('📄 Creating default user...');
+      console.log('Creating default user...');
       
       const defaultUsers: UserWithPassword[] = [
         {
@@ -44,9 +44,9 @@ async function initializeUsers(): Promise<void> {
       ];
       
       await writeJSONFile(getStoragePath('users.json'), defaultUsers);
-      console.log('✅ Default user created: defaultuser / password123');
+      console.log('Default user created: defaultuser / password123');
     } else {
-      console.log(`📊 Found ${users.length} existing users`);
+      console.log(`Found ${users.length} existing users`);
     }
   } catch (error) {
     console.error('Failed to initialize users:', error);
@@ -62,7 +62,7 @@ async function initializeTasks(): Promise<void> {
     const tasks = await getAllTasks();
     
     if (tasks.length === 0) {
-      console.log('📄 Creating default task...');
+      console.log('Creating default task...');
       
       const defaultTasks: Task[] = [
         {
@@ -77,9 +77,9 @@ async function initializeTasks(): Promise<void> {
       ];
       
       await writeJSONFile(getStoragePath('tasks.json'), defaultTasks);
-      console.log('✅ Default task created');
+      console.log('Default task created');
     } else {
-      console.log(`📊 Found ${tasks.length} existing tasks`);
+      console.log(`Found ${tasks.length} existing tasks`);
     }
   } catch (error) {
     console.error('Failed to initialize tasks:', error);

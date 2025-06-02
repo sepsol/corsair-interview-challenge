@@ -22,26 +22,26 @@ export function loadEnvironment() {
     '.env'
   ];
 
-  console.log(`🔧 Loading environment for NODE_ENV: ${nodeEnv}`);
+  console.log(`Loading environment for NODE_ENV: ${nodeEnv}`);
   
   // Load each env file that exists
   envFiles.forEach(envFile => {
     const envPath = resolve(envDir, envFile);
     
     if (existsSync(envPath)) {
-      console.log(`📄 Loading env file: ${envFile}`);
+      console.log(`Loading env file: ${envFile}`);
       
       // Load and expand the environment file
       const result = dotenv.config({ path: envPath });
       
       if (result.error) {
-        console.error(`❌ Error loading ${envFile}:`, result.error);
+        console.error(`Error loading ${envFile}:`, result.error);
       } else {
         // Expand variables (e.g., API_URL=$BASE_URL/api)
         dotenvExpand.expand(result);
       }
     } else {
-      console.log(`⚠️  Env file not found: ${envFile}`);
+      console.log(`Env file not found: ${envFile}`);
     }
   });
   
