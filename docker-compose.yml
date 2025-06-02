@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.${DOCKER_ENV:-development}
+      args:
+        - PORT=${BACKEND_CONTAINER_PORT:-4000}
+    image: task-manager/backend:latest
+    container_name: task-manager-backend
+    ports:
+      - "${BACKEND_HOST_PORT:-4000}:${BACKEND_CONTAINER_PORT:-4000}"
+    env_file:
+      - ./backend/.env.${DOCKER_ENV:-development}
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - task-manager-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.${DOCKER_ENV:-development}
+      args:
+        - PORT=${FRONTEND_CONTAINER_PORT:-3000}
+    image: task-manager/frontend:latest
+    container_name: task-manager-frontend
+    ports:
+      - "${FRONTEND_HOST_PORT:-3000}:${FRONTEND_CONTAINER_PORT:-3000}"
+    env_file:
+      - ./frontend/.env.${DOCKER_ENV:-development}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - task-manager-network
+
+networks:
+  task-manager-network:
+    driver: bridge
