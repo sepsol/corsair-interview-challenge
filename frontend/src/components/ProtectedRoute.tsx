@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import AuthLoadingScreen from "@/components/ui/AuthLoadingScreen";
 
 /**
  * Props for the ProtectedRoute component
@@ -38,11 +38,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   // Show loading spinner while checking authentication
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <LoadingSpinner message="Checking authentication..." />
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
 
   // If not authenticated, redirect to root page
