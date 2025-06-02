@@ -19,14 +19,20 @@ import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
  */
 export default function LoginPage() {
   const { login } = useAuth();
-  const { error, isLoading, executeWithHandling } = useErrorHandler();
+  const { error, isLoading, executeWithHandling, setLoadingState } = useErrorHandler();
   const router = useRouter();
 
   const handleLogin = async (data: AuthFormData) => {
-    await executeWithHandling(
-      () => login(data),
-      "Login failed"
-    );
+    try {
+      await executeWithHandling(
+        () => login(data),
+        "Login failed"
+      );
+      // Keep loading state active during navigation
+      setLoadingState(true);
+    } catch (err) {
+      // Error is already handled by executeWithHandling
+    }
   };
 
   const handleNavigateToRegister = () => {
