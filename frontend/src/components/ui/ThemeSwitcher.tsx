@@ -80,11 +80,12 @@ export default function ThemeSwitcher() {
       <button
         ref={setButtonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors cursor-pointer"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors cursor-pointer w-full"
         style={{ 
           backgroundColor: 'var(--secondary)', 
           borderColor: 'var(--border)', 
-          color: 'var(--foreground)' 
+          color: 'var(--foreground)',
+          width: '100%'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = 'var(--accent)';
