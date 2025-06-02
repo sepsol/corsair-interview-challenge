@@ -38,6 +38,8 @@ function TasksPageContent() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'completed'>('all');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
 
   const handleLogout = () => {
@@ -113,6 +115,17 @@ function TasksPageContent() {
     }
   };
 
+  const filteredAndSortedTasks = tasks
+    .filter(task => {
+      if (filterStatus === 'all') return true;
+      return task.status === filterStatus;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
 
   return (
     <PageLayout 
@@ -146,9 +159,6 @@ function TasksPageContent() {
                 </svg>
                 Logout
               </Button>
-              <Button onClick={handleOpenCreateModal}>
-                + Add Task
-              </Button>
               <ThemeSwitcher />
             </>
           )}
@@ -177,16 +187,72 @@ function TasksPageContent() {
               description="Create your first task to get started" 
             />
           ) : (
-            <div className="space-y-3">
-              {tasks.map((task) => (
-                <TaskCard 
-                  key={task.id} 
-                  task={task} 
-                  onEdit={handleOpenEditModal}
-                  onDelete={handleOpenDeleteModal}
+            <>
+              <div className="flex flex-col sm:flex-row gap-4 mb-6 sm:items-center sm:justify-between">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+                      Filter:
+                    </label>
+                    <select
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value as 'all' | 'pending' | 'completed')}
+                      className="px-3 py-2 text-sm border rounded-md"
+                      style={{
+                        borderColor: 'var(--border)',
+                        backgroundColor: 'var(--background)',
+                        color: 'var(--foreground)'
+                      }}
+                    >
+                      <option value="all">All Tasks</option>
+                      <option value="pending">Pending</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+                      Sort by Date:
+                    </label>
+                    <select
+                      value={sortOrder}
+                      onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                      className="px-3 py-2 text-sm border rounded-md"
+                      style={{
+                        borderColor: 'var(--border)',
+                        backgroundColor: 'var(--background)',
+                        color: 'var(--foreground)'
+                      }}
+                    >
+                      <option value="desc">Newest First</option>
+                      <option value="asc">Oldest First</option>
+                    </select>
+                  </div>
+                </div>
+
+                <Button onClick={handleOpenCreateModal}>
+                  + Add Task
+                </Button>
+              </div>
+
+              {filteredAndSortedTasks.length === 0 ? (
+                <EmptyState 
+                  title="No matching tasks" 
+                  description="Try adjusting your filters to see more tasks" 
                 />
-              ))}
-            </div>
+              ) : (
+                <div className="space-y-3">
+                  {filteredAndSortedTasks.map((task) => (
+                    <TaskCard 
+                      key={task.id} 
+                      task={task} 
+                      onEdit={handleOpenEditModal}
+                      onDelete={handleOpenDeleteModal}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </>
       )}

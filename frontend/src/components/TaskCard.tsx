@@ -127,7 +127,7 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
           {task.description}
         </p>
         <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--muted-foreground)' }}>
-          <span>Created {new Date(task.createdAt).toLocaleDateString()}</span>
+          <span>Created {new Date(task.createdAt).toLocaleDateString()} at {new Date(task.createdAt).toLocaleTimeString()}</span>
           {task.status === 'completed' && (
             <span className="font-medium" style={{ color: '#22c55e' }}>✓ Completed</span>
           )}
