@@ -15,7 +15,7 @@ The easiest way to get started is with Docker Compose:
 docker compose up
 ```
 
-This will start both the frontend (http://localhost:3000) and backend (http://localhost:4000) with hot reload enabled. See the [Development](#development) section below for more details and alternative setup options.
+This will start both the frontend ([localhost:3000](http://localhost:3000)) and backend ([localhost:4000](http://localhost:4000)) with hot reload enabled. See the [Development](#development) section below for more details and alternative setup options.
 
 ### Features
 - **User Authentication**: JWT-based authentication with bcrypt password hashing
