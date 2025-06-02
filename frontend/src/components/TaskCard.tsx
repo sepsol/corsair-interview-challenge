@@ -2,6 +2,8 @@ import { Task } from "@task-manager/shared";
 import { useTasks } from "@/contexts/TasksContext";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
+import { formatDateTime } from "@/utils/dateUtils";
+import { getStatusDisplay } from "@/utils/taskUtils";
 
 /**
  * Props for the TaskCard component
@@ -36,6 +38,7 @@ interface TaskCardProps {
 export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
   const { toggleTaskStatus, toggleLoadingTasks } = useTasks();
   const isToggleLoading = toggleLoadingTasks.has(task.id);
+  const statusDisplay = getStatusDisplay(task.status);
   const handleEdit = () => {
     if (onEdit) {
       onEdit(task);
@@ -127,13 +130,13 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
           {task.description}
         </p>
         <div className="flex items-center gap-4 text-xs">
-          <span style={{ color: 'var(--muted-foreground)', opacity: 0.7 }}>Created {new Date(task.createdAt).toLocaleDateString()} at {new Date(task.createdAt).toLocaleTimeString()}</span>
-          {task.status === 'completed' && (
-            <span className="font-medium" style={{ color: '#22c55e' }}>✓ Completed</span>
-          )}
-          {task.status === 'pending' && (
-            <span className="font-medium" style={{ color: '#eab308' }}>Pending</span>
-          )}
+          <span style={{ color: 'var(--muted-foreground)', opacity: 0.7 }}>{formatDateTime(task.createdAt)}</span>
+          <span 
+            className="font-medium" 
+            style={{ color: statusDisplay.color }}
+          >
+            {statusDisplay.icon} {statusDisplay.text}
+          </span>
         </div>
       </div>
     </div>

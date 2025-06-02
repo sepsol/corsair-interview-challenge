@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
 import AuthForm, { AuthFormData } from "@/components/AuthForm";
 import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
 
@@ -21,34 +20,15 @@ import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
  * @returns The register page component
  */
 export default function RegisterPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { register } = useAuth();
+  const { error, isLoading, executeWithHandling } = useErrorHandler();
   const router = useRouter();
 
   const handleRegister = async (data: AuthFormData) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      await register(data);
-      
-    } catch (err) {
-      let errorMessage = "An unexpected error occurred";
-      
-      if (axios.isAxiosError(err)) {
-        errorMessage = err.response?.data?.error || err.message || "Registration failed";
-      } else if (err instanceof Error) {
-        errorMessage = err.message;
-      }
-      
-      setError(errorMessage);
-      if (process.env.NODE_ENV === 'development') {
-        console.error("Registration error:", errorMessage);
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    await executeWithHandling(
+      () => register(data),
+      "Registration failed"
+    );
   };
 
   const handleNavigateToLogin = () => {

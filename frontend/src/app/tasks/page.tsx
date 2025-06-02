@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useTasks } from "@/contexts/TasksContext";
 import { Task } from "@task-manager/shared";
+import { useMultiModal } from "@/hooks/useModal";
+import { filterAndSortTasks } from "@/utils/taskUtils";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLayout from "@/components/ui/PageLayout";
 import TaskCard from "@/components/TaskCard";
@@ -30,40 +32,38 @@ import UserNavbar from "@/components/UserNavbar";
  */
 function TasksPageContent() {
   const { tasks, isLoading, error, createTask, updateTask, deleteTask } = useTasks();
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { modals } = useMultiModal(['create', 'edit', 'delete'] as const);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'completed'>('all');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const handleOpenCreateModal = () => {
-    setIsCreateModalOpen(true);
+    modals.create.open();
   };
 
   const handleCloseCreateModal = () => {
-    setIsCreateModalOpen(false);
+    modals.create.close();
   };
 
   const handleOpenEditModal = (task: Task) => {
     setEditingTask(task);
-    setIsEditModalOpen(true);
+    modals.edit.open();
   };
 
   const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
+    modals.edit.close();
     setEditingTask(null);
   };
 
   const handleOpenDeleteModal = (task: Task) => {
     setDeletingTask(task);
-    setIsDeleteModalOpen(true);
+    modals.delete.open();
   };
 
   const handleCloseDeleteModal = () => {
-    setIsDeleteModalOpen(false);
+    modals.delete.close();
     // Delay clearing the deletingTask to allow modal exit animation to complete
     setTimeout(() => {
       setDeletingTask(null);
@@ -108,16 +108,7 @@ function TasksPageContent() {
     }
   };
 
-  const filteredAndSortedTasks = tasks
-    .filter(task => {
-      if (filterStatus === 'all') return true;
-      return task.status === filterStatus;
-    })
-    .sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-    });
+  const filteredAndSortedTasks = filterAndSortTasks(tasks, filterStatus, sortOrder);
 
 
   return (
@@ -220,7 +211,7 @@ function TasksPageContent() {
 
       {/* Create Task Modal */}
       <Modal
-        isOpen={isCreateModalOpen}
+        isOpen={modals.create.isOpen}
         onClose={handleCloseCreateModal}
         title="Create New Task"
         size="md"
@@ -233,7 +224,7 @@ function TasksPageContent() {
 
       {/* Edit Task Modal */}
       <Modal
-        isOpen={isEditModalOpen}
+        isOpen={modals.edit.isOpen}
         onClose={handleCloseEditModal}
         title="Edit Task"
         size="md"
@@ -250,7 +241,7 @@ function TasksPageContent() {
 
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
-        isOpen={isDeleteModalOpen}
+        isOpen={modals.delete.isOpen}
         onClose={handleCloseDeleteModal}
         onConfirm={handleDeleteTask}
         title="Delete Task"

@@ -1,6 +1,6 @@
 import { getAllTasks } from '@/data/tasks';
 import { getAllUsers } from '@/data/users';
-import { readJSONFile, writeJSONFile, getStoragePath } from '@/utils/fileStorage';
+import { writeJSONFile, getStoragePath } from '@/utils/fileStorage';
 import { Task } from '@task-manager/shared';
 import { UserWithPassword } from '@/data/users';
 

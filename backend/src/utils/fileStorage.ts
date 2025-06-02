@@ -16,9 +16,9 @@ export async function readJSONFile<T>(filePath: string, defaultValue: T): Promis
   try {
     const data = await fs.readFile(filePath, 'utf8');
     return JSON.parse(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
     // If file doesn't exist, create it with default value
-    if (error.code === 'ENOENT') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
       await ensureDirectoryExists(path.dirname(filePath));
       await writeJSONFile(filePath, defaultValue);
       return defaultValue;
@@ -33,7 +33,7 @@ export async function readJSONFile<T>(filePath: string, defaultValue: T): Promis
     }
     
     // Re-throw other errors
-    throw new Error(`Failed to read JSON file ${filePath}: ${error.message}`);
+    throw new Error(`Failed to read JSON file ${filePath}: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -54,7 +54,7 @@ export async function writeJSONFile<T>(filePath: string, data: T): Promise<void>
     
     // Atomic rename (this is atomic on most filesystems)
     await fs.rename(tempFile, filePath);
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Clean up temp file if write failed
     try {
       await fs.unlink(tempFile);
@@ -62,7 +62,7 @@ export async function writeJSONFile<T>(filePath: string, data: T): Promise<void>
       // Ignore cleanup errors
     }
     
-    throw new Error(`Failed to write JSON file ${filePath}: ${error.message}`);
+    throw new Error(`Failed to write JSON file ${filePath}: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -73,9 +73,9 @@ export async function writeJSONFile<T>(filePath: string, data: T): Promise<void>
 async function ensureDirectoryExists(dirPath: string): Promise<void> {
   try {
     await fs.mkdir(dirPath, { recursive: true });
-  } catch (error: any) {
-    if (error.code !== 'EEXIST') {
-      throw new Error(`Failed to create directory ${dirPath}: ${error.message}`);
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'code' in error && error.code !== 'EEXIST') {
+      throw new Error(`Failed to create directory ${dirPath}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }
