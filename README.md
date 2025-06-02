@@ -49,22 +49,39 @@ For the full specification please see [here](./SPECIFICATION.md).
 ### Setup
 1. Clone the repository
 2. Navigate to the project's root directory
-3. Install dependencies for all packages:
-   ```sh
-   npm install
-   ```
+3. Copy `.env.example` to `.env` and configure environment variables
 4. Set up environment variables (copy `.env.example` files in backend and frontend)
 
 ### Development
-Run both frontend and backend in development mode:
+
+#### Recommended: Docker Compose (Easiest)
+Run both frontend and backend with Docker:
 
 ```sh
-# Backend (runs on localhost:4000)
-cd backend && npm run dev
-
-# Frontend (runs on localhost:3000)
-cd frontend && npm run dev
+docker compose up
 ```
+
+This will:
+- Build and start both frontend ([localhost:3000](http://localhost:3000)) and backend ([localhost:4000](http://localhost:4000))
+- Enable hot reload for development
+- Handle all dependencies automatically
+
+#### Alternative: Manual Setup
+If you prefer to run without Docker:
+
+1. Install dependencies for all packages:
+   ```sh
+   npm install
+   ```
+
+2. Run both services manually:
+   ```sh
+   # Backend (runs on localhost:4000)
+   cd backend && npm run dev
+
+   # Frontend (runs on localhost:3000)
+   cd frontend && npm run dev
+   ```
 
 ### Production
 Build and run in production mode:
