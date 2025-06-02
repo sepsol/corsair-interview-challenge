@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthLoadingScreen from "@/components/ui/AuthLoadingScreen";
@@ -36,17 +36,23 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
+  // Redirect to root page if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('No authentication found, redirecting to root');
+      }
+      router.push('/');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
   // Show loading spinner while checking authentication
   if (isLoading) {
     return <AuthLoadingScreen />;
   }
 
-  // If not authenticated, redirect to root page
+  // If not authenticated, return null while redirect happens
   if (!isAuthenticated) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('No authentication found, redirecting to root');
-    }
-    router.push('/');
     return null;
   }
 
