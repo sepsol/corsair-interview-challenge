@@ -64,6 +64,7 @@ export default function LoginPage() {
         error={error}
         loading={isLoading}
         onSwitchAuthMode={handleNavigateToRegister}
+        hint="Demo credentials: defaultuser / password123"
       />
     </div>
   );

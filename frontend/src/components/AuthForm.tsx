@@ -25,6 +25,8 @@ interface AuthFormProps {
   loading?: boolean;
   /** Optional callback when user wants to switch between login and register modes */
   onSwitchAuthMode?: () => void;
+  /** Optional hint to display below the submit button (only in development) */
+  hint?: string;
 }
 
 /**
@@ -47,6 +49,7 @@ export default function AuthForm({
   error,
   loading = false,
   onSwitchAuthMode,
+  hint,
 }: AuthFormProps) {
   const isRegister = mode === "register";
   const schema = isRegister ? registerSchema : loginSchema;
@@ -141,6 +144,22 @@ export default function AuthForm({
           {submitButtonText}
         </Button>
       </form>
+
+      {/* Development hint - only show in development mode and for login */}
+      {process.env.NODE_ENV === 'development' && mode === 'login' && hint && (
+        <div className="text-center">
+          <div 
+            className="text-xs px-3 py-2 rounded-md border"
+            style={{ 
+              backgroundColor: 'var(--muted)', 
+              borderColor: 'var(--border)',
+              color: 'var(--muted-foreground)'
+            }}
+          >
+            💡 {hint}
+          </div>
+        </div>
+      )}
 
       {/* Additional info - only show if navigation callback is provided */}
       {onSwitchAuthMode && (
